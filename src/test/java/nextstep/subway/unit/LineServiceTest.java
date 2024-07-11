@@ -5,6 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import nextstep.subway.StationRepository;
+import nextstep.subway.line.domain.LineCommandService;
+import nextstep.subway.line.domain.LineRepository;
+
 @SpringBootTest
 @Transactional
 public class LineServiceTest {
@@ -14,7 +18,7 @@ public class LineServiceTest {
     private LineRepository lineRepository;
 
     @Autowired
-    private LineService lineService;
+    private LineCommandService lineCommandService;
 
     @Test
     void addSection() {
