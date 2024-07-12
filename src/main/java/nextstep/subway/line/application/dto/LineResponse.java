@@ -58,7 +58,7 @@ public class LineResponse {
     }
 
     public static LineResponse from(Line line) {
-        List<StationResponse> stations = line.getSections().stream()
+        List<StationResponse> stations = line.getUnmodifiableSections().stream()
             .flatMap(section -> Stream.of(
                 new StationResponse(section.getUpStationId(), section.getUpStationName()),
                 new StationResponse(section.getDownStationId(), section.getDownStationName())

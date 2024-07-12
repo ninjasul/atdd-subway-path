@@ -3,7 +3,7 @@ package nextstep.subway.line.domain;
 import java.util.Objects;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -31,8 +31,8 @@ public class Section {
     @JoinColumn(name = "down_station_id", nullable = false)
     private Station downStation;
 
-    @Column(nullable = false)
-    private Integer distance;
+    @Embedded
+    private SectionDistance distance;
 
     protected Section() {
     }
@@ -42,11 +42,7 @@ public class Section {
         this.line = line;
         this.upStation = upStation;
         this.downStation = downStation;
-        this.distance = distance;
-    }
-
-    public Section(Station upStation, Station downStation, Integer distance) {
-        this(null, null, upStation, downStation, distance);
+        this.distance = new SectionDistance(distance);
     }
 
     public Section(Line line, Station upStation, Station downStation, Integer distance) {
@@ -90,7 +86,7 @@ public class Section {
     }
 
     public Integer getDistance() {
-        return distance;
+        return distance.getValue();
     }
 
     public void setLine(Line line) {
@@ -109,8 +105,9 @@ public class Section {
 
         Section section = (Section)object;
         return Objects.equals(line, section.line)
-            && Objects.equals(upStation, section.upStation) && Objects.equals(downStation,
-            section.downStation) && Objects.equals(distance, section.distance);
+            && Objects.equals(upStation, section.upStation) &&
+            Objects.equals(downStation, section.downStation) &&
+            Objects.equals(distance, section.distance);
     }
 
     @Override

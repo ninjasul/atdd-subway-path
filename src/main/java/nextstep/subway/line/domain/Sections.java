@@ -1,7 +1,10 @@
 package nextstep.subway.line.domain;
 
+import static nextstep.subway.line.domain.Line.*;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -11,11 +14,12 @@ import nextstep.subway.Station;
 
 @Embeddable
 public class Sections {
-    public static final String ALREADY_ADDED_SECTION_MESSAGE = "이미 추가된 구간입니다.";
+    public static final String ALREADY_EXISTING_SECTION_MESSAGE = "이미 추가된 구간입니다.";
     public static final String INVALID_UP_STATION_MESSAGE = "새로운 구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이어야 합니다.";
     public static final String DUPLICATE_DOWN_STATION_MESSAGE = "이미 해당 노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없습니다.";
     public static final String CANNOT_REMOVE_SECTION_MESSAGE = "지하철 노선에 등록된 하행 종점역만 제거할 수 있습니다.";
     public static final String LAST_SECTION_CANNOT_BE_REMOVED_MESSAGE = "지하철 노선에 상행 종점역과 하행 종점역만 있는 경우 역을 삭제할 수 없습니다.";
+    public static final String NOT_EXISTING_SECTION_MESSAGE = "존재하지 않는 섹션입니다.";
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
@@ -24,8 +28,8 @@ public class Sections {
     }
 
     public void addSection(Line line, Section section) {
-        if (contains(section)) {
-            throw new IllegalArgumentException(ALREADY_ADDED_SECTION_MESSAGE);
+        if (sections.contains(section)) {
+            throw new IllegalArgumentException(ALREADY_EXISTING_SECTION_MESSAGE);
         }
 
         if (!isValidUpStation(section.getUpStation())) {
@@ -50,12 +54,20 @@ public class Sections {
     }
 
     private Station getLastDownStation() {
+        if (sections.isEmpty()) {
+            throw new IllegalStateException(SECTION_NOT_FOUND);
+        }
+
         return sections.get(sections.size() - 1).getDownStation();
     }
 
     public void removeSection(Station station) {
         if (sections.size() <= 1) {
             throw new IllegalArgumentException(LAST_SECTION_CANNOT_BE_REMOVED_MESSAGE);
+        }
+
+        if (!getLastDownStation().equals(station)) {
+            throw new IllegalArgumentException(CANNOT_REMOVE_SECTION_MESSAGE);
         }
 
         Section sectionToRemove = sections.stream()
@@ -75,10 +87,12 @@ public class Sections {
     }
 
     public Section getLastSection() {
-        if (sections.isEmpty()) {
-            return null;
-        }
+        return Optional.of(sections)
+            .map(it -> it.get(it.size() - 1))
+            .orElseThrow(() -> new IllegalArgumentException(NOT_EXISTING_SECTION_MESSAGE));
+    }
 
-        return sections.get(sections.size() - 1);
+    public boolean isEmpty() {
+        return sections.isEmpty();
     }
 }

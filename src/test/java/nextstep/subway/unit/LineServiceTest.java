@@ -29,6 +29,6 @@ public class LineServiceTest {
         // lineService.addSection 호출
 
         // then
-        // line.getSections 메서드를 통해 검증
+        // line.getUnmodifiableSections 메서드를 통해 검증
     }
 }

@@ -1,8 +1,8 @@
 package nextstep.subway.line.domain;
 
 import java.util.List;
+import java.util.Objects;
 
-import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,15 +13,17 @@ import nextstep.subway.Station;
 
 @Entity
 public class Line {
+    public static final String SECTION_NOT_FOUND = "섹션이 없습니다.";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(length = 20, nullable = false)
-    private String name;
+    @Embedded
+    private LineName name;
 
-    @Column(length = 20, nullable = false)
-    private String color;
+    @Embedded
+    private LineColor color;
 
     @Embedded
     private Sections sections;
@@ -30,8 +32,8 @@ public class Line {
     }
 
     public Line(String name, String color) {
-        this.name = name;
-        this.color = color;
+        this.name = new LineName(name);
+        this.color = new LineColor(color);
         this.sections = new Sections();
     }
 
@@ -40,16 +42,16 @@ public class Line {
     }
 
     public String getName() {
-        return name;
+        return name.getValue();
     }
 
     public String getColor() {
-        return color;
+        return color.getValue();
     }
 
     public Line getUpdated(String name, String color) {
-        this.name = name;
-        this.color = color;
+        this.name = new LineName(name);
+        this.color = new LineColor(color);
         return this;
     }
 
@@ -58,14 +60,37 @@ public class Line {
     }
 
     public void removeSection(Station station) {
+        if (sections.isEmpty()) {
+            throw new IllegalStateException(SECTION_NOT_FOUND);
+        }
+
         sections.removeSection(station);
     }
 
-    public List<Section> getSections() {
+    public List<Section> getUnmodifiableSections() {
         return sections.toUnmodifiableList();
     }
 
     public Section getLastSection() {
         return sections.getLastSection();
+    }
+
+    @Override
+    public boolean equals(Object object) {
+        if (this == object) {
+            return true;
+        }
+
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+
+        Line line = (Line)object;
+        return Objects.equals(name, line.name) && Objects.equals(color, line.color);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, color);
     }
 }
