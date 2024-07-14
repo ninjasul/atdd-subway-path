@@ -11,7 +11,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.line.application.dto.LineRequest;
+import nextstep.subway.application.dto.LineRequest;
 
 @DisplayName("지하철 구간 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)

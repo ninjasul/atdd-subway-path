@@ -1,7 +1,7 @@
 package nextstep.subway.unit;
 
-import static nextstep.subway.line.application.DefaultLineCommandService.*;
-import static nextstep.subway.line.domain.Sections.*;
+import static nextstep.subway.application.DefaultLineCommandService.*;
+import static nextstep.subway.domain.model.Sections.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -12,18 +12,18 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import nextstep.subway.Station;
-import nextstep.subway.StationRepository;
-import nextstep.subway.line.application.DefaultLineCommandService;
-import nextstep.subway.line.application.dto.LineRequest;
-import nextstep.subway.line.application.dto.LineResponse;
-import nextstep.subway.line.application.dto.SectionRequest;
-import nextstep.subway.line.application.dto.SectionResponse;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineCommandService;
-import nextstep.subway.line.domain.LineRepository;
-import nextstep.subway.line.domain.Section;
-import nextstep.subway.line.domain.Sections;
+import nextstep.subway.domain.model.Station;
+import nextstep.subway.domain.repository.StationRepository;
+import nextstep.subway.application.DefaultLineCommandService;
+import nextstep.subway.application.dto.LineRequest;
+import nextstep.subway.application.dto.LineResponse;
+import nextstep.subway.application.dto.SectionRequest;
+import nextstep.subway.application.dto.SectionResponse;
+import nextstep.subway.domain.model.Line;
+import nextstep.subway.domain.service.LineCommandService;
+import nextstep.subway.domain.repository.LineRepository;
+import nextstep.subway.domain.model.Section;
+import nextstep.subway.domain.model.Sections;
 
 public class LineCommandServiceMockTest {
     private LineRepository lineRepository;

@@ -13,11 +13,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import nextstep.subway.line.application.DefaultLineQueryService;
-import nextstep.subway.line.application.dto.LineResponse;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.LineQueryService;
-import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.application.DefaultLineQueryService;
+import nextstep.subway.application.dto.LineResponse;
+import nextstep.subway.domain.model.Line;
+import nextstep.subway.domain.service.LineQueryService;
+import nextstep.subway.domain.repository.LineRepository;
 
 public class LineQueryServiceMockTest {
     private LineRepository lineRepository;

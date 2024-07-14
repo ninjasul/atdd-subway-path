@@ -1,7 +1,7 @@
 package nextstep.subway.unit;
 
-import static nextstep.subway.line.domain.LineColor.*;
-import static nextstep.subway.line.domain.LineName.*;
+import static nextstep.subway.domain.model.LineColor.*;
+import static nextstep.subway.domain.model.LineName.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
@@ -12,10 +12,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
-import nextstep.subway.Station;
-import nextstep.subway.line.domain.Line;
-import nextstep.subway.line.domain.Section;
-import nextstep.subway.line.domain.Sections;
+import nextstep.subway.domain.model.Station;
+import nextstep.subway.domain.model.Line;
+import nextstep.subway.domain.model.Section;
+import nextstep.subway.domain.model.Sections;
 
 public class LineTest {
 

@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import nextstep.subway.StationRepository;
-import nextstep.subway.line.domain.LineCommandService;
-import nextstep.subway.line.domain.LineRepository;
+import nextstep.subway.domain.repository.StationRepository;
+import nextstep.subway.domain.service.LineCommandService;
+import nextstep.subway.domain.repository.LineRepository;
 
 @SpringBootTest
 @Transactional
