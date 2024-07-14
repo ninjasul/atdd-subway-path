@@ -40,44 +40,6 @@ public class LineTest {
         }
 
         @Test
-        @DisplayName("새로운 구간을 추가할 때 상행역이 노선의 하행 종점역이 아니면 구간 추가가 실패한다")
-        void addSectionWithInvalidUpStation() {
-            // given
-            Line line = new Line("2호선", "bg-red-600");
-            Station gangnamStation = new Station("강남역");
-            Station yeoksamStation = new Station("역삼역");
-            Station seolleungStation = new Station("선릉역");
-
-            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            line.addSection(initialSection);
-
-            // when // then
-            Section newSection = new Section(line, gangnamStation, seolleungStation, 10);
-            assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> line.addSection(newSection))
-                .withMessage(Sections.INVALID_UP_STATION_MESSAGE);
-        }
-
-        @Test
-        @DisplayName("새로운 구간을 추가할 때 하행역이 이미 노선에 존재하면 구간 추가가 실패한다")
-        void addSectionWithDuplicateDownSection() {
-            // given
-            Line line = new Line("2호선", "bg-red-600");
-            Station gangnamStation = new Station("강남역");
-            Station yeoksamStation = new Station("역삼역");
-
-            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            line.addSection(initialSection);
-
-            // when // then
-            Section newSection = new Section(line, yeoksamStation, gangnamStation, 10);
-
-            assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> line.addSection(newSection))
-                .withMessage(Sections.DUPLICATE_DOWN_STATION_MESSAGE);
-        }
-
-        @Test
         @DisplayName("새로운 구간을 추가할 때 해당 구간이 올바르면 구간이 추가된다")
         void addSectionSuccessfully() {
             // given

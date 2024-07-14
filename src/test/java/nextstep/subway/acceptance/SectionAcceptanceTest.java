@@ -140,7 +140,7 @@ public class SectionAcceptanceTest {
             ExtractableResponse<Response> response = addSection(lineId, 1L, 3L, 2);
 
             // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         }
 
         /**
@@ -165,7 +165,7 @@ public class SectionAcceptanceTest {
             ExtractableResponse<Response> response = addSection(lineId, 2L, 3L, 8);
 
             // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.OK.value());
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         }
     }
 

@@ -51,6 +51,10 @@ public class Section {
         return new SectionBuilder();
     }
 
+    public void updateDistance(Integer newDistance) {
+        this.distance = new SectionDistance(newDistance);
+    }
+
     public Long getId() {
         return id;
     }
@@ -104,13 +108,12 @@ public class Section {
         Section section = (Section)object;
         return Objects.equals(line, section.line)
             && Objects.equals(upStation, section.upStation) &&
-            Objects.equals(downStation, section.downStation) &&
-            Objects.equals(distance, section.distance);
+            Objects.equals(downStation, section.downStation);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(line, upStation, downStation, distance);
+        return Objects.hash(line, upStation, downStation);
     }
 
     public static class SectionBuilder {

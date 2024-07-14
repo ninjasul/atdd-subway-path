@@ -192,51 +192,6 @@ public class LineCommandServiceMockTest {
     class AddSection {
 
         @Test
-        @DisplayName("새로운 구간을 추가할 때 상행역이 노선의 하행 종점역이 아니면 구간 추가가 실패한다")
-        void addSectionWithInvalidUpStation() {
-            // given
-            Line line = new Line(1L,  "2호선", "bg-red-600");
-            Station gangnamStation = new Station(1L, "강남역");
-            Station yeoksamStation = new Station(2L, "역삼역");
-            Station seolleungStation = new Station(3L, "선릉역");
-
-            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            line.addSection(initialSection);
-            when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
-            when(stationRepository.findById(1L)).thenReturn(Optional.of(gangnamStation));
-            when(stationRepository.findById(3L)).thenReturn(Optional.of(seolleungStation));
-
-            SectionRequest sectionRequest = new SectionRequest(1L, 3L, 8);
-
-            // when // then
-            assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> lineCommandService.addSection(1L, sectionRequest))
-                .withMessage(Sections.INVALID_UP_STATION_MESSAGE);
-        }
-
-        @Test
-        @DisplayName("새로운 구간을 추가할 때 하행역이 이미 노선에 존재하면 구간 추가가 실패한다")
-        void addSectionWithDuplicateDownStation() {
-            // given
-            Line line = new Line(1L,  "2호선", "bg-red-600");
-            Station gangnamStation = new Station(1L, "강남역");
-            Station yeoksamStation = new Station(2L, "역삼역");
-
-            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            line.addSection(initialSection);
-            when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
-            when(stationRepository.findById(1L)).thenReturn(Optional.of(gangnamStation));
-            when(stationRepository.findById(2L)).thenReturn(Optional.of(yeoksamStation));
-
-            SectionRequest sectionRequest = new SectionRequest(2L, 1L, 5);
-
-            // when // then
-            assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> lineCommandService.addSection(1L, sectionRequest))
-                .withMessage(DUPLICATE_DOWN_STATION_MESSAGE);
-        }
-
-        @Test
         @DisplayName("존재하지 않는 역으로 구간을 추가하려고 하면 실패한다")
         void addSectionWithNonExistentStation() {
             // given
