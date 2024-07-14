@@ -80,6 +80,15 @@ public class Line {
         return sections.getLastSection();
     }
 
+    public boolean generateId(Long id) {
+        if (this.id == null) {
+            this.id = id;
+            return true;
+        }
+
+        return false;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) {

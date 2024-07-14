@@ -51,4 +51,13 @@ public class Station {
     public int hashCode() {
         return Objects.hash(name);
     }
+
+    public boolean generateId(Long id) {
+        if (this.id == null) {
+            this.id = id;
+            return true;
+        }
+
+        return false;
+    }
 }
