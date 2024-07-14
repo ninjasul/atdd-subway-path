@@ -59,7 +59,6 @@ public class DefaultLineCommandService implements LineCommandService {
         if (!lineRepository.existsById(id)) {
             throw new IllegalArgumentException(LINE_NOT_FOUND_MESSAGE);
         }
-
         lineRepository.deleteById(id);
     }
 
@@ -69,17 +68,17 @@ public class DefaultLineCommandService implements LineCommandService {
         Station upStation = findStationOrElseThrow(sectionRequest.getUpStationId());
         Station downStation = findStationOrElseThrow(sectionRequest.getDownStationId());
 
-        line.addSection(
-            new Section.SectionBuilder()
-                .line(line)
-                .upStation(upStation)
-                .downStation(downStation)
-                .distance(sectionRequest.getDistance())
-                .build()
-        );
+        Section section = new Section.SectionBuilder()
+            .line(line)
+            .upStation(upStation)
+            .downStation(downStation)
+            .distance(sectionRequest.getDistance())
+            .build();
 
-        Line savedLine = lineRepository.save(line);
-        return SectionResponse.from(savedLine.getLastSection());
+        line.addSection(section);
+
+        lineRepository.save(line);
+        return SectionResponse.from(section);
     }
 
     @Override

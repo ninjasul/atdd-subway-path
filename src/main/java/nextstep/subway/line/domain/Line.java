@@ -31,6 +31,13 @@ public class Line {
     public Line() {
     }
 
+    public Line(Long id, String name, String color) {
+        this.id = id;
+        this.name = new LineName(name);
+        this.color = new LineColor(color);
+        this.sections = new Sections();
+    }
+
     public Line(String name, String color) {
         this.name = new LineName(name);
         this.color = new LineColor(color);
