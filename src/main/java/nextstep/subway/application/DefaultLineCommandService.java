@@ -32,7 +32,7 @@ public class DefaultLineCommandService implements LineCommandService {
     public LineResponse saveLine(LineRequest lineRequest) {
         final Station upStation = findStationOrElseThrow(lineRequest.getUpStationId());
         final Station downStation = findStationOrElseThrow(lineRequest.getDownStationId());
-        final Section section = new Section.SectionBuilder()
+        final Section section = Section.builder()
             .upStation(upStation)
             .downStation(downStation)
             .distance(lineRequest.getDistance())
@@ -68,7 +68,7 @@ public class DefaultLineCommandService implements LineCommandService {
         Station upStation = findStationOrElseThrow(sectionRequest.getUpStationId());
         Station downStation = findStationOrElseThrow(sectionRequest.getDownStationId());
 
-        Section section = new Section.SectionBuilder()
+        Section section = Section.builder()
             .line(line)
             .upStation(upStation)
             .downStation(downStation)
