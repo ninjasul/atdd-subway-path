@@ -1,5 +1,7 @@
 package nextstep.subway.application.strategy;
 
+import static nextstep.subway.domain.model.Sections.*;
+
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -27,11 +29,19 @@ public class AddSectionByDownStationStrategy implements SectionAdditionStrategy 
 
     @Override
     public void addSection(Line line, List<Section> sections, Section newSection) {
-        Section existingSection = line.getExistingSectionByDownStation(newSection);
+        Section existingSection = getExistingSectionByDownStation(sections, newSection);
         int newDistance = existingSection.getDistance() - newSection.getDistance();
         existingSection.updateDistance(newDistance);
         sections.add(newSection);
         newSection.setLine(line);
     }
+
+    private Section getExistingSectionByDownStation(List<Section> sections, Section newSection) {
+        return sections.stream()
+            .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
+            .findFirst()
+            .orElseThrow(() -> new IllegalArgumentException(NOT_EXISTING_SECTION_MESSAGE));
+    }
+
 }
 

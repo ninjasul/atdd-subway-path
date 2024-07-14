@@ -30,20 +30,6 @@ public class Sections {
         sectionAdditionStrategy.addSection(line, sections, newSection);
     }
 
-    public Section getExistingSectionByUpStation(Section newSection) {
-        return sections.stream()
-            .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException(NOT_EXISTING_SECTION_MESSAGE));
-    }
-
-    public Section getExistingSectionByDownStation(Section newSection) {
-        return sections.stream()
-            .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException(NOT_EXISTING_SECTION_MESSAGE));
-    }
-
     private Station getLastDownStation() {
         if (sections.isEmpty()) {
             throw new IllegalStateException(SECTION_NOT_FOUND);

@@ -113,12 +113,4 @@ public class Line {
     public Sections getSections() {
         return sections;
     }
-
-    public Section getExistingSectionByUpStation(Section section) {
-        return sections.getExistingSectionByUpStation(section);
-    }
-
-    public Section getExistingSectionByDownStation(Section section) {
-        return sections.getExistingSectionByDownStation(section);
-    }
 }
