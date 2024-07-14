@@ -26,7 +26,7 @@ public class Line {
     private LineColor color;
 
     @Embedded
-    private Sections sections;
+    private Sections sections = new Sections();
 
     public Line() {
     }

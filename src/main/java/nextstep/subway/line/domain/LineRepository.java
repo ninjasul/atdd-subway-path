@@ -11,4 +11,6 @@ public interface LineRepository {
     Line save(Line line);
 
     void deleteById(Long id);
+
+    boolean existsById(Long id);
 }

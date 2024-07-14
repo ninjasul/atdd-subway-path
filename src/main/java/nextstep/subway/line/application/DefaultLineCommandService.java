@@ -57,6 +57,10 @@ public class DefaultLineCommandService implements LineCommandService {
 
     @Override
     public void deleteLineById(Long id) {
+        if (!lineRepository.existsById(id)) {
+            throw new IllegalArgumentException(LINE_NOT_FOUND_MESSAGE);
+        }
+
         lineRepository.deleteById(id);
     }
 
