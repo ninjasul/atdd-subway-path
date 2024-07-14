@@ -13,6 +13,8 @@ import nextstep.subway.domain.model.Section;
 import nextstep.subway.application.dto.LineRequest;
 import nextstep.subway.application.dto.SectionRequest;
 import nextstep.subway.application.dto.SectionResponse;
+import nextstep.subway.domain.service.SectionAdditionStrategy;
+import nextstep.subway.domain.service.SectionAdditionStrategyFactory;
 
 @Service
 @Transactional
@@ -22,10 +24,17 @@ public class DefaultLineCommandService implements LineCommandService {
 
     private final LineRepository lineRepository;
     private final StationRepository stationRepository;
+    private final SectionAdditionStrategyFactory sectionAdditionStrategyFactory;
 
-    public DefaultLineCommandService(LineRepository lineRepository, StationRepository stationRepository) {
+
+    public DefaultLineCommandService(
+        LineRepository lineRepository,
+        StationRepository stationRepository,
+        SectionAdditionStrategyFactory sectionAdditionStrategyFactory
+    ) {
         this.lineRepository = lineRepository;
         this.stationRepository = stationRepository;
+        this.sectionAdditionStrategyFactory = sectionAdditionStrategyFactory;
     }
 
     @Override
@@ -43,7 +52,8 @@ public class DefaultLineCommandService implements LineCommandService {
             lineRequest.getColor()
         );
 
-        line.addSection(section);
+        SectionAdditionStrategy strategy = sectionAdditionStrategyFactory.getStrategy(line, section);
+        line.addSection(strategy, section);
 
         Line savedLine = lineRepository.save(line);
         return LineResponse.from(savedLine);
@@ -59,6 +69,7 @@ public class DefaultLineCommandService implements LineCommandService {
         if (!lineRepository.existsById(id)) {
             throw new IllegalArgumentException(LINE_NOT_FOUND_MESSAGE);
         }
+
         lineRepository.deleteById(id);
     }
 
@@ -75,7 +86,8 @@ public class DefaultLineCommandService implements LineCommandService {
             .distance(sectionRequest.getDistance())
             .build();
 
-        line.addSection(section);
+        SectionAdditionStrategy strategy = sectionAdditionStrategyFactory.getStrategy(line, section);
+        line.addSection(strategy, section);
 
         lineRepository.save(line);
         return SectionResponse.from(section);

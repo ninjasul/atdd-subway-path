@@ -51,7 +51,7 @@ public class Section {
         return new SectionBuilder();
     }
 
-    public void updateDistance(Integer newDistance) {
+    public void updateDistance(int newDistance) {
         this.distance = new SectionDistance(newDistance);
     }
 

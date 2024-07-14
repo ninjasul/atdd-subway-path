@@ -10,12 +10,12 @@ import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.OneToMany;
 
+import nextstep.subway.domain.service.SectionAdditionStrategy;
+
 @Embeddable
 public class Sections {
     public static final String ALREADY_EXISTING_SECTION_MESSAGE = "이미 추가된 구간입니다.";
     public static final String CANNOT_ADD_SECTION_MESSAGE = "구간을 추가할 수 없습니다.";
-    public static final String INVALID_UP_STATION_MESSAGE = "새로운 구간의 상행역은 해당 노선에 등록되어있는 하행 종점역이어야 합니다.";
-    public static final String DUPLICATE_DOWN_STATION_MESSAGE = "이미 해당 노선에 등록되어있는 역은 새로운 구간의 하행역이 될 수 없습니다.";
     public static final String CANNOT_REMOVE_SECTION_MESSAGE = "지하철 노선에 등록된 하행 종점역만 제거할 수 있습니다.";
     public static final String LAST_SECTION_CANNOT_BE_REMOVED_MESSAGE = "지하철 노선에 상행 종점역과 하행 종점역만 있는 경우 역을 삭제할 수 없습니다.";
     public static final String NOT_EXISTING_SECTION_MESSAGE = "존재하지 않는 구간입니다.";
@@ -26,99 +26,22 @@ public class Sections {
     protected Sections() {
     }
 
-    public void addSection(Line line, Section section) {
-        if (sections.contains(section)) {
-            throw new IllegalArgumentException(ALREADY_EXISTING_SECTION_MESSAGE);
-        }
-
-        if (sections.isEmpty()) {
-        }
-        else if (canAddSectionByUpStation(section)) {
-            Section existingSection = getExistingSectionByUpStation(section);
-            updateSectionDistance(existingSection, section);
-        } else if (canAddSectionByDownStation(section)) {
-            Section existingSection = getExistingSectionByDownStation(section);
-            updateSectionDistance(existingSection, section);
-        } else if (canAddSectionToLastStation(section)) {
-        } else {
-            throw new IllegalArgumentException(CANNOT_ADD_SECTION_MESSAGE);
-        }
-
-        sections.add(section);
-        section.setLine(line);
+    public void addSection(Line line, SectionAdditionStrategy sectionAdditionStrategy, Section newSection) {
+        sectionAdditionStrategy.addSection(line, sections, newSection);
     }
 
-    private Section getExistingSectionByUpStation(Section newSection) {
+    public Section getExistingSectionByUpStation(Section newSection) {
         return sections.stream()
             .filter(section -> section.getUpStation().equals(newSection.getUpStation()))
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException(NOT_EXISTING_SECTION_MESSAGE));
     }
 
-    private Section getExistingSectionByDownStation(Section newSection) {
+    public Section getExistingSectionByDownStation(Section newSection) {
         return sections.stream()
             .filter(section -> section.getDownStation().equals(newSection.getDownStation()))
             .findFirst()
             .orElseThrow(() -> new IllegalArgumentException(NOT_EXISTING_SECTION_MESSAGE));
-    }
-
-    private void updateSectionDistance(Section existingSection, Section newSection) {
-        int newDistance = existingSection.getDistance() - newSection.getDistance();
-        if (newDistance <= 0) {
-            throw new IllegalArgumentException(CANNOT_ADD_SECTION_MESSAGE);
-        }
-
-        Section updatedSection = new Section(
-            existingSection.getLine(),
-            newSection.getDownStation(),
-            existingSection.getDownStation(),
-            newDistance
-        );
-
-        sections.remove(existingSection);
-        sections.add(updatedSection);
-    }
-
-    private boolean canAddSectionByUpStation(Section newSection) {
-        return sections.stream()
-            .anyMatch(oldSection -> canAddSectionByUpStation(oldSection, newSection));
-    }
-
-    private boolean canAddSectionByDownStation(Section newSection) {
-        return sections.stream()
-            .anyMatch(oldSection -> canAddStationByDownStation(oldSection, newSection));
-    }
-
-    private boolean canAddSectionByUpStation(Section oldSection, Section newSection) {
-        return oldSection.getUpStation().equals(newSection.getUpStation()) &&
-            hasValidDistance(oldSection, newSection);
-    }
-
-    private boolean canAddStationByDownStation(Section oldSection, Section newSection) {
-        return oldSection.getDownStation().equals(newSection.getDownStation()) &&
-            hasValidDistance(oldSection, newSection);
-    }
-
-    private static boolean hasValidDistance(Section oldSection, Section newSection) {
-        return oldSection.getDistance() > newSection.getDistance();
-    }
-
-    private boolean canAddSectionToLastStation(Section newSection) {
-        return sections.stream()
-            .anyMatch(oldSection -> canAddNewSectionToOldSection(oldSection, newSection));
-    }
-
-    private boolean canAddNewSectionToOldSection(Section oldSection, Section newSection) {
-        return oldSection.getDownStation().equals(newSection.getUpStation());
-    }
-
-    private boolean isValidUpStation(Station upStation) {
-        return sections.isEmpty();
-    }
-
-    private boolean isStationAlreadyAdded(Station station) {
-        return sections.stream()
-            .anyMatch(section -> section.getUpStation().equals(station) || section.getDownStation().equals(station));
     }
 
     private Station getLastDownStation() {
@@ -162,5 +85,9 @@ public class Sections {
 
     public boolean isEmpty() {
         return sections.isEmpty();
+    }
+
+    public List<Section> getSections() {
+        return sections;
     }
 }

@@ -9,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import nextstep.subway.domain.service.SectionAdditionStrategy;
+
 @Entity
 public class Line {
     public static final String SECTION_NOT_FOUND = "섹션이 없습니다.";
@@ -60,8 +62,8 @@ public class Line {
         return this;
     }
 
-    public void addSection(Section section) {
-        sections.addSection(this, section);
+    public void addSection(SectionAdditionStrategy sectionAdditionStrategy, Section section) {
+        sections.addSection(this, sectionAdditionStrategy, section);
     }
 
     public void removeSection(Station station) {
@@ -106,5 +108,17 @@ public class Line {
     @Override
     public int hashCode() {
         return Objects.hash(name, color);
+    }
+
+    public Sections getSections() {
+        return sections;
+    }
+
+    public Section getExistingSectionByUpStation(Section section) {
+        return sections.getExistingSectionByUpStation(section);
+    }
+
+    public Section getExistingSectionByDownStation(Section section) {
+        return sections.getExistingSectionByDownStation(section);
     }
 }
