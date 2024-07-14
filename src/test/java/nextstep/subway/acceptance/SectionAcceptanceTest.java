@@ -23,40 +23,8 @@ public class SectionAcceptanceTest {
     @DisplayName("구간 추가")
     class AddSection {
 
-
-        /**
-         * Given 지하철 노선을 생성하고
-         * And 두 지하철역을 생성하고
-         * When 지하철 노선에 새로운 구간을 등록하면
-         * Then 새로운 구간이 등록된다
-         */
-        @DisplayName("지하철 노선에 구간을 등록한다")
         @Test
-        void testAddSection() {
-            // given
-            createStation("강남역");
-            createStation("역삼역");
-            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
-            Long lineId = createLineResponse.jsonPath().getLong("id");
-
-            createStation("선릉역");
-
-            // when
-            ExtractableResponse<Response> response = addSection(lineId, 2L, 3L, 8);
-
-            // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        }
-
-        /**
-         * Given 지하철 노선을 생성하고
-         * And 두 지하철역을 생성하고
-         * And 없는 역을 상행역으로 요청하여
-         * When 지하철 노선에 구간을 등록하려 하면
-         * Then 구간 등록이 실패한다
-         */
-        @DisplayName("없는 역을 상행역으로 요청하여 구간 등록 실패")
-        @Test
+        @DisplayName("존재하지 않는 상행역으로 구간을 추가하려고 하면 실패한다")
         void testAddSectionWithNonExistentUpStation() {
             // given
             createStation("강남역");
@@ -72,15 +40,8 @@ public class SectionAcceptanceTest {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
 
-        /**
-         * Given 지하철 노선을 생성하고
-         * And 두 지하철역을 생성하고
-         * And 없는 역을 하행역으로 요청하여
-         * When 지하철 노선에 구간을 등록하려 하면
-         * Then 구간 등록이 실패한다
-         */
-        @DisplayName("없는 역을 하행역으로 요청하여 구간 등록 실패")
         @Test
+        @DisplayName("존재하지 않는 하행역으로 구간을 추가하려고 하면 실패한다")
         void testAddSectionWithNonExistentDownStation() {
             // given
             createStation("강남역");
@@ -95,77 +56,142 @@ public class SectionAcceptanceTest {
             assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
 
-        /**
-         * Given 지하철 노선을 생성하고
-         * And 두 지하철역을 생성하고
-         * And 새로운 구간을 등록하고
-         * When 지하철 노선에 기존 구간과 중복된 구간을 등록하면
-         * Then 구간 등록이 실패한다
-         */
-        @DisplayName("지하철 노선에 중복된 구간을 등록할 때 실패한다")
         @Test
-        void testAddDuplicateSection() {
+        @DisplayName("지하철 노선에 구간을 정상적으로 등록한다")
+        void testAddSectionSuccessfully() {
             // given
             createStation("강남역");
             createStation("역삼역");
+            createStation("선릉역");
             ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
             Long lineId = createLineResponse.jsonPath().getLong("id");
-
-            // when
-            ExtractableResponse<Response> response = addSection(lineId, 1L, 2L, 10);
-
-            // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
-        }
-
-        /**
-         * Given 지하철 노선을 생성하고
-         * And 두 지하철역을 생성하고
-         * And 새로운 구간을 등록하고
-         * When 지하철 노선에 상행역은 이미 존재하고 하행역은 존재하지 않는 경우 새 구간을 등록하면
-         * Then 기존 상행역과 하행역 사이에 구간을 추가한다
-         */
-        @DisplayName("지하철 노선에 상행역 기준으로 새 구간을 등록할 때 성공한다")
-        @Test
-        void testAddNewSectionByUpStation() {
-            // given
-            createStation("강남역");
-            createStation("판교역");
-            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
-            Long lineId = createLineResponse.jsonPath().getLong("id");
-
-            createStation("양재역");
-
-            // when
-            ExtractableResponse<Response> response = addSection(lineId, 1L, 3L, 2);
-
-            // then
-            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
-        }
-
-        /**
-         * Given 지하철 노선을 생성하고
-         * And 두 지하철역을 생성하고
-         * And 새로운 구간을 등록하고
-         * When 지하철 노선에 하행역은 이미 존재하고 상행역은 존재하지 않는 경우 새 구간을 등록하면
-         * Then 기존 상행역과 하행역 사이에 구간을 추가한다
-         */
-        @DisplayName("지하철 노선에 하행역 기준으로 새 구간을 등록할 때 성공한다")
-        @Test
-        void testAddNewSectionByDownStation() {
-            // given
-            createStation("강남역");
-            createStation("판교역");
-            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
-            Long lineId = createLineResponse.jsonPath().getLong("id");
-
-            createStation("양재역");
 
             // when
             ExtractableResponse<Response> response = addSection(lineId, 2L, 3L, 8);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        }
+
+        @Test
+        @DisplayName("상행역 기준으로 구간 추가 시 기존 구간 거리보다 큰 거리값을 요청하면 실패한다")
+        void testAddSectionWithShorterDistanceThanExistingUpStation() {
+            // given
+            createStation("강남역");
+            createStation("역삼역");
+            createStation("선릉역");
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 3L, 10));
+            Long lineId = createLineResponse.jsonPath().getLong("id");
+
+            // when
+            ExtractableResponse<Response> response = addSection(lineId, 1L, 2L, 15);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+
+        @Test
+        @DisplayName("상행역 기준으로 신규 구간을 추가한다")
+        void testAddSectionByUpStation() {
+            // given
+            createStation("강남역");
+            createStation("역삼역");
+            createStation("선릉역");
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 3L, 10));
+            Long lineId = createLineResponse.jsonPath().getLong("id");
+
+            // when
+            ExtractableResponse<Response> response = addSection(lineId, 1L, 2L, 5);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        }
+
+        @Test
+        @DisplayName("하행역 기준으로 구간 추가 시 기존 구간 거리보다 큰 거리값을 요청하면 실패한다")
+        void testAddSectionWithShorterDistanceThanExistingDownStation() {
+            // given
+            createStation("강남역");
+            createStation("역삼역");
+            createStation("선릉역");
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 3L, 10));
+            Long lineId = createLineResponse.jsonPath().getLong("id");
+
+            // when
+            ExtractableResponse<Response> response = addSection(lineId, 2L, 3L, 15);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+
+        @Test
+        @DisplayName("하행역 기준으로 신규 구간을 추가한다")
+        void testAddSectionByDownStation() {
+            // given
+            createStation("강남역");
+            createStation("역삼역");
+            createStation("선릉역");
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 3L, 10));
+            Long lineId = createLineResponse.jsonPath().getLong("id");
+
+            // when
+            ExtractableResponse<Response> response = addSection(lineId, 2L, 3L, 8);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        }
+
+        @Test
+        @DisplayName("구간 추가 후 마지막 구간에 다시 구간을 추가한다")
+        void testAddSectionToEndOfLine() {
+            // given
+            createStation("강남역");
+            createStation("역삼역");
+            createStation("선릉역");
+            createStation("삼성역");
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
+            Long lineId = createLineResponse.jsonPath().getLong("id");
+            addSection(lineId, 2L, 3L, 8);
+
+            // when
+            ExtractableResponse<Response> response = addSection(lineId, 3L, 4L, 7);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        }
+
+        @Test
+        @DisplayName("상행역과 하행역이 모두 기존 구간에 존재하면 추가를 실패한다")
+        void testAddSectionWithBothExistingStations() {
+            // given
+            createStation("강남역");
+            createStation("선릉역");
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
+            Long lineId = createLineResponse.jsonPath().getLong("id");
+
+            // when
+            ExtractableResponse<Response> response = addSection(lineId, 1L, 2L, 5);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
+
+        @Test
+        @DisplayName("구간이 이미 존재하는 노선에 구간을 추가하려고 할 때 상행역과 하행역이 모두 기존 구간과 다른 경우 추가를 실패한다")
+        void testAddSectionWithBothNonExistingStations() {
+            // given
+            createStation("강남역");
+            createStation("역삼역");
+            createStation("선릉역");
+            createStation("삼성역");
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
+            Long lineId = createLineResponse.jsonPath().getLong("id");
+
+            // when
+            ExtractableResponse<Response> response = addSection(lineId, 4L, 3L, 5);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
