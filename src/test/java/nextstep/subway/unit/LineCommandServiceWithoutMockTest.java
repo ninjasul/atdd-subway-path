@@ -258,7 +258,7 @@ public class LineCommandServiceWithoutMockTest {
         }
 
         @Test
-        @DisplayName("상행역 기준으로 구간 추가 시 기존 구간 거리보다 작은 거리값을 요청하면 실패한다")
+        @DisplayName("상행역 기준으로 구간 추가 시 기존 구간 거리보다 큰 거리값을 요청하면 실패한다")
         void addSectionWithShorterDistanceThanExistingUpStation() {
             // given
             Line line = new Line(1L, "2호선", "bg-red-600");
@@ -314,7 +314,7 @@ public class LineCommandServiceWithoutMockTest {
         }
 
         @Test
-        @DisplayName("하행역 기준으로 구간 추가 시 기존 구간 거리보다 작은 거리값을 요청하면 실패한다")
+        @DisplayName("하행역 기준으로 구간 추가 시 기존 구간 거리보다 큰 거리값을 요청하면 실패한다")
         void addSectionWithShorterDistanceThanExistingDownStation() {
             // given
             Line line = new Line(1L, "2호선", "bg-red-600");
@@ -377,7 +377,7 @@ public class LineCommandServiceWithoutMockTest {
             Station gangnamStation = new Station(1L, "강남역");
             Station yeoksamStation = new Station(2L, "역삼역");
             Station seolleungStation = new Station(3L, "선릉역");
-            Station hantiStation = new Station(4L, "한티역");
+            Station samsungStation = new Station(4L, "삼성역");
 
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
             line.addSection(initialSection);
@@ -388,7 +388,7 @@ public class LineCommandServiceWithoutMockTest {
             stationRepository.save(gangnamStation);
             stationRepository.save(yeoksamStation);
             stationRepository.save(seolleungStation);
-            stationRepository.save(hantiStation);
+            stationRepository.save(samsungStation);
 
             SectionRequest sectionRequest = new SectionRequest(3L, 4L, 7);
 

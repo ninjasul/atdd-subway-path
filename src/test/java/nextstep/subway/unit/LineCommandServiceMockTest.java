@@ -12,18 +12,17 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import nextstep.subway.domain.model.Station;
-import nextstep.subway.domain.repository.StationRepository;
 import nextstep.subway.application.DefaultLineCommandService;
 import nextstep.subway.application.dto.LineRequest;
 import nextstep.subway.application.dto.LineResponse;
 import nextstep.subway.application.dto.SectionRequest;
 import nextstep.subway.application.dto.SectionResponse;
 import nextstep.subway.domain.model.Line;
-import nextstep.subway.domain.service.LineCommandService;
-import nextstep.subway.domain.repository.LineRepository;
 import nextstep.subway.domain.model.Section;
-import nextstep.subway.domain.model.Sections;
+import nextstep.subway.domain.model.Station;
+import nextstep.subway.domain.repository.LineRepository;
+import nextstep.subway.domain.repository.StationRepository;
+import nextstep.subway.domain.service.LineCommandService;
 
 public class LineCommandServiceMockTest {
     private LineRepository lineRepository;
@@ -192,10 +191,10 @@ public class LineCommandServiceMockTest {
     class AddSection {
 
         @Test
-        @DisplayName("존재하지 않는 역으로 구간을 추가하려고 하면 실패한다")
+        @DisplayName("존재하지 않는 상행역으로 구간을 추가하려고 하면 실패한다")
         void addSectionWithNonExistentStation() {
             // given
-            Line line = new Line(1L,  "2호선", "bg-red-600");
+            Line line = new Line(1L, "2호선", "bg-red-600");
             Station gangnamStation = new Station(1L, "강남역");
             Station yeoksamStation = new Station(2L, "역삼역");
 
@@ -206,6 +205,28 @@ public class LineCommandServiceMockTest {
             when(stationRepository.findById(999L)).thenReturn(Optional.empty());
 
             SectionRequest sectionRequest = new SectionRequest(999L, 1L, 5);
+
+            // when // then
+            assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> lineCommandService.addSection(1L, sectionRequest))
+                .withMessage(STATION_NOT_FOUND_MESSAGE);
+        }
+
+        @Test
+        @DisplayName("존재하지 않는 하행역으로 구간을 추가하려고 하면 실패한다")
+        void addSectionWithNonExistentDownStation() {
+            // given
+            Line line = new Line(1L, "2호선", "bg-red-600");
+            Station gangnamStation = new Station(1L, "강남역");
+            Station yeoksamStation = new Station(2L, "역삼역");
+
+            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
+            line.addSection(initialSection);
+
+            when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+            when(stationRepository.findById(999L)).thenReturn(Optional.empty());
+
+            SectionRequest sectionRequest = new SectionRequest(1L, 999L, 5);
 
             // when // then
             assertThatExceptionOfType(IllegalArgumentException.class)
@@ -240,6 +261,191 @@ public class LineCommandServiceMockTest {
             assertThat(response.getDownStationId()).isEqualTo(3L);
             verify(lineRepository, times(1)).save(any(Line.class));
         }
+
+        @Test
+        @DisplayName("상행역 기준으로 구간 추가 시 기존 구간 거리보다 큰 거리값을 요청하면 실패한다")
+        void addSectionWithShorterDistanceThanExistingUpStation() {
+            // given
+            Line line = new Line(1L, "2호선", "bg-red-600");
+            Station gangnamStation = new Station(1L, "강남역");
+            Station yeoksamStation = new Station(2L, "역삼역");
+            Station seolleungStation = new Station(3L, "선릉역");
+
+            Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
+            line.addSection(initialSection);
+
+            when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+            when(stationRepository.findById(1L)).thenReturn(Optional.of(gangnamStation));
+            when(stationRepository.findById(2L)).thenReturn(Optional.of(yeoksamStation));
+
+            SectionRequest sectionRequest = new SectionRequest(1L, 2L, 15);
+
+            // when // then
+            assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> lineCommandService.addSection(1L, sectionRequest))
+                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
+        }
+
+        @Test
+        @DisplayName("상행역 기준으로 신규 구간을 추가한다")
+        void addSectionByUpStation() {
+            // given
+            Line line = new Line(1L, "2호선", "bg-red-600");
+            Station gangnamStation = new Station(1L, "강남역");
+            Station yeoksamStation = new Station(2L, "역삼역");
+            Station seolleungStation = new Station(3L, "선릉역");
+
+            Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
+            line.addSection(initialSection);
+
+            when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+            when(stationRepository.findById(1L)).thenReturn(Optional.of(gangnamStation));
+            when(stationRepository.findById(2L)).thenReturn(Optional.of(yeoksamStation));
+
+            SectionRequest sectionRequest = new SectionRequest(1L, 2L, 5);
+
+            // when
+            SectionResponse response = lineCommandService.addSection(1L, sectionRequest);
+
+            // then
+            assertThat(response.getUpStationId()).isEqualTo(1L);
+            assertThat(response.getDownStationId()).isEqualTo(2L);
+            assertThat(response.getDistance()).isEqualTo(5);
+            verify(lineRepository, times(1)).save(any(Line.class));
+        }
+
+        @Test
+        @DisplayName("하행역 기준으로 구간 추가 시 기존 구간 거리보다 큰 거리값을 요청하면 실패한다")
+        void addSectionWithShorterDistanceThanExistingDownStation() {
+            // given
+            Line line = new Line(1L, "2호선", "bg-red-600");
+            Station gangnamStation = new Station(1L, "강남역");
+            Station yeoksamStation = new Station(2L, "역삼역");
+            Station seolleungStation = new Station(3L, "선릉역");
+
+            Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
+            line.addSection(initialSection);
+
+            when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+            when(stationRepository.findById(2L)).thenReturn(Optional.of(yeoksamStation));
+            when(stationRepository.findById(3L)).thenReturn(Optional.of(seolleungStation));
+
+            SectionRequest sectionRequest = new SectionRequest(2L, 3L, 15);
+
+            // when // then
+            assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> lineCommandService.addSection(1L, sectionRequest))
+                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
+        }
+
+        @Test
+        @DisplayName("하행역 기준으로 신규 구간을 추가한다")
+        void addSectionByDownStation() {
+            // given
+            Line line = new Line(1L, "2호선", "bg-red-600");
+            Station gangnamStation = new Station(1L, "강남역");
+            Station yeoksamStation = new Station(2L, "역삼역");
+            Station seolleungStation = new Station(3L, "선릉역");
+
+            Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
+            line.addSection(initialSection);
+
+            when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+            when(stationRepository.findById(2L)).thenReturn(Optional.of(yeoksamStation));
+            when(stationRepository.findById(3L)).thenReturn(Optional.of(seolleungStation));
+
+            SectionRequest sectionRequest = new SectionRequest(2L, 3L, 8);
+
+            // when
+            SectionResponse response = lineCommandService.addSection(1L, sectionRequest);
+
+            // then
+            assertThat(response.getUpStationId()).isEqualTo(2L);
+            assertThat(response.getDownStationId()).isEqualTo(3L);
+            assertThat(response.getDistance()).isEqualTo(8);
+            verify(lineRepository, times(1)).save(any(Line.class));
+        }
+
+        @Test
+        @DisplayName("구간 추가 후 마지막 구간에 다시 구간을 추가한다")
+        void addSectionToEndOfLine() {
+            // given
+            Line line = new Line(1L, "2호선", "bg-red-600");
+            Station gangnamStation = new Station(1L, "강남역");
+            Station yeoksamStation = new Station(2L, "역삼역");
+            Station seolleungStation = new Station(3L, "선릉역");
+            Station hantiStation = new Station(4L, "한티역");
+
+            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
+            line.addSection(initialSection);
+            Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
+            line.addSection(additionalSection);
+
+            when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+            when(stationRepository.findById(3L)).thenReturn(Optional.of(seolleungStation));
+            when(stationRepository.findById(4L)).thenReturn(Optional.of(hantiStation));
+            when(lineRepository.save(any(Line.class))).thenReturn(line);
+
+            SectionRequest sectionRequest = new SectionRequest(3L, 4L, 7);
+
+            // when
+            SectionResponse response = lineCommandService.addSection(1L, sectionRequest);
+
+            // then
+            assertThat(response.getUpStationId()).isEqualTo(3L);
+            assertThat(response.getDownStationId()).isEqualTo(4L);
+            assertThat(response.getDistance()).isEqualTo(7);
+            verify(lineRepository, times(1)).save(any(Line.class));
+        }
+
+        @Test
+        @DisplayName("상행역과 하행역이 모두 기존 구간에 존재하면 추가를 실패한다")
+        void addSectionWithBothExistingStations() {
+            // given
+            Line line = new Line(1L, "2호선", "bg-red-600");
+            Station gangnamStation = new Station(1L, "강남역");
+            Station seolleungStation = new Station(3L, "선릉역");
+
+            Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
+            line.addSection(initialSection);
+
+            when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+            when(stationRepository.findById(1L)).thenReturn(Optional.of(gangnamStation));
+            when(stationRepository.findById(3L)).thenReturn(Optional.of(seolleungStation));
+
+            SectionRequest sectionRequest = new SectionRequest(1L, 3L, 5);
+
+            // when // then
+            assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> lineCommandService.addSection(1L, sectionRequest))
+                .withMessage(ALREADY_EXISTING_SECTION_MESSAGE);
+        }
+
+        @Test
+        @DisplayName("구간이 이미 존재하는 노선에 구간을 추가하려고 할 때 상행역과 하행역이 모두 기존 구간과 다른 경우 추가를 실패한다")
+        void addSectionWithBothNonExistingStations() {
+            // given
+            Line line = new Line(1L, "2호선", "bg-red-600");
+            Station gangnamStation = new Station(1L, "강남역");
+            Station yeoksamStation = new Station(2L, "역삼역");
+            Station seolleungStation = new Station(3L, "선릉역");
+            Station samsungStation = new Station(4L, "삼성역");
+
+            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
+            line.addSection(initialSection);
+
+            when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+            when(stationRepository.findById(4L)).thenReturn(Optional.of(samsungStation));
+            when(stationRepository.findById(3L)).thenReturn(Optional.of(seolleungStation));
+
+            SectionRequest sectionRequest = new SectionRequest(4L, 3L, 5);
+
+            // when // then
+            assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> lineCommandService.addSection(1L, sectionRequest))
+                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
+        }
+
     }
 
     @Nested
