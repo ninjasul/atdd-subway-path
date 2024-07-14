@@ -18,7 +18,6 @@ import nextstep.subway.line.application.dto.SectionResponse;
 @Transactional
 public class DefaultLineCommandService implements LineCommandService {
     public static final String LINE_NOT_FOUND_MESSAGE = "노선을 찾을 수 없습니다.";
-
     public static final String STATION_NOT_FOUND_MESSAGE = "역을 찾을 수 없습니다.";
 
     private final LineRepository lineRepository;
@@ -64,13 +63,12 @@ public class DefaultLineCommandService implements LineCommandService {
         lineRepository.deleteById(id);
     }
 
-
     @Override
     public SectionResponse addSection(Long lineId, SectionRequest sectionRequest) {
         Line line = findLineOrElseThrow(lineId);
         Station upStation = findStationOrElseThrow(sectionRequest.getUpStationId());
         Station downStation = findStationOrElseThrow(sectionRequest.getDownStationId());
-        
+
         line.addSection(
             new Section.SectionBuilder()
                 .line(line)
@@ -80,8 +78,8 @@ public class DefaultLineCommandService implements LineCommandService {
                 .build()
         );
 
-        lineRepository.save(line);
-        return SectionResponse.from(line.getLastSection());
+        Line savedLine = lineRepository.save(line);
+        return SectionResponse.from(savedLine.getLastSection());
     }
 
     @Override
