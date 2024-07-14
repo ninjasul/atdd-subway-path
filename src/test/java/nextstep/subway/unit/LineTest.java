@@ -2,6 +2,7 @@ package nextstep.subway.unit;
 
 import static nextstep.subway.domain.model.LineColor.*;
 import static nextstep.subway.domain.model.LineName.*;
+import static nextstep.subway.domain.model.Sections.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
@@ -36,7 +37,7 @@ public class LineTest {
             // when // then
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> line.addSection(section))
-                .withMessage(Sections.ALREADY_EXISTING_SECTION_MESSAGE);
+                .withMessage(ALREADY_EXISTING_SECTION_MESSAGE);
         }
 
         @Test
@@ -53,6 +54,152 @@ public class LineTest {
 
             // then
             assertThat(line.getUnmodifiableSections()).contains(section);
+        }
+
+        @Test
+        @DisplayName("상행역과 하행역이 모두 기존 구간에 존재하면 추가를 실패한다")
+        void addSectionWithBothExistingStations() {
+            // given
+            Line line = new Line("2호선", "bg-red-600");
+            Station gangnamStation = new Station("강남역");
+            Station seolleungStation = new Station("선릉역");
+
+            Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
+            line.addSection(initialSection);
+
+            Section duplicateSection = new Section(line, gangnamStation, seolleungStation, 10);
+
+            // when // then
+            assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> line.addSection(duplicateSection))
+                .withMessage(ALREADY_EXISTING_SECTION_MESSAGE);
+        }
+
+        @Test
+        @DisplayName("상행역과 하행역이 모두 기존 구간과 다른 경우 추가를 실패한다")
+        void addSectionWithBothNonExistingStations() {
+            // given
+            Line line = new Line("2호선", "bg-red-600");
+            Station gangnamStation = new Station("강남역");
+            Station yeoksamStation = new Station("역삼역");
+            Station seolleungStation = new Station("선릉역");
+            Station samsungStation = new Station("삼성역");
+
+            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
+            line.addSection(initialSection);
+
+            Section invalidSection = new Section(line, seolleungStation, samsungStation, 5);
+
+            // when // then
+            assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> line.addSection(invalidSection))
+                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
+        }
+
+        @Test
+        @DisplayName("상행역 기준으로 신규 구간을 추가한다")
+        void addSectionByUpStation() {
+            // given
+            Line line = new Line("2호선", "bg-red-600");
+            Station gangnamStation = new Station("강남역");
+            Station yeoksamStation = new Station("역삼역");
+            Station seolleungStation = new Station("선릉역");
+
+            Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
+            line.addSection(initialSection);
+
+            Section newSection = new Section(line, gangnamStation, yeoksamStation, 5);
+
+            // when
+            line.addSection(newSection);
+
+            // then
+            assertThat(line.getUnmodifiableSections()).contains(newSection);
+        }
+
+        @Test
+        @DisplayName("하행역 기준으로 신규 구간을 추가한다")
+        void addSectionByDownStation() {
+            // given
+            Line line = new Line("2호선", "bg-red-600");
+            Station gangnamStation = new Station("강남역");
+            Station yeoksamStation = new Station("역삼역");
+            Station seolleungStation = new Station("선릉역");
+
+            Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
+            line.addSection(initialSection);
+
+            Section newSection = new Section(line, yeoksamStation, seolleungStation, 5);
+
+            // when
+            line.addSection(newSection);
+
+            // then
+            assertThat(line.getUnmodifiableSections()).contains(newSection);
+        }
+
+        @Test
+        @DisplayName("상행역 기준으로 구간 추가 시 기존 구간 거리보다 큰 거리값을 요청하면 실패한다")
+        void addSectionWithShorterDistanceThanExistingUpStation() {
+            // given
+            Line line = new Line("2호선", "bg-red-600");
+            Station gangnamStation = new Station("강남역");
+            Station yeoksamStation = new Station("역삼역");
+            Station seolleungStation = new Station("선릉역");
+
+            Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
+            line.addSection(initialSection);
+
+            Section invalidSection = new Section(line, gangnamStation, yeoksamStation, 15);
+
+            // when // then
+            assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> line.addSection(invalidSection))
+                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
+        }
+
+        @Test
+        @DisplayName("하행역 기준으로 구간 추가 시 기존 구간 거리보다 큰 거리값을 요청하면 실패한다")
+        void addSectionWithShorterDistanceThanExistingDownStation() {
+            // given
+            Line line = new Line("2호선", "bg-red-600");
+            Station gangnamStation = new Station("강남역");
+            Station yeoksamStation = new Station("역삼역");
+            Station seolleungStation = new Station("선릉역");
+
+            Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
+            line.addSection(initialSection);
+
+            Section invalidSection = new Section(line, yeoksamStation, seolleungStation, 15);
+
+            // when // then
+            assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> line.addSection(invalidSection))
+                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
+        }
+
+        @Test
+        @DisplayName("구간 추가 후 마지막 구간에 다시 구간을 추가한다")
+        void addSectionToEndOfLine() {
+            // given
+            Line line = new Line("2호선", "bg-red-600");
+            Station gangnamStation = new Station("강남역");
+            Station yeoksamStation = new Station("역삼역");
+            Station seolleungStation = new Station("선릉역");
+            Station hantiStation = new Station("한티역");
+
+            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
+            line.addSection(initialSection);
+            Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
+            line.addSection(additionalSection);
+
+            Section newSection = new Section(line, seolleungStation, hantiStation, 7);
+
+            // when
+            line.addSection(newSection);
+
+            // then
+            assertThat(line.getUnmodifiableSections()).contains(newSection);
         }
     }
 
