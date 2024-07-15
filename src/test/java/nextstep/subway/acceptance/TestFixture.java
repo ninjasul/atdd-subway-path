@@ -29,6 +29,11 @@ public class TestFixture {
             .extract();
     }
 
+    public static Long createStationAndGetId(String stationName) {
+        ExtractableResponse<Response> response = createStation(stationName);
+        return response.jsonPath().getLong("id");
+    }
+
     public static ExtractableResponse<Response> getAllStations() {
         return RestAssured
             .given()

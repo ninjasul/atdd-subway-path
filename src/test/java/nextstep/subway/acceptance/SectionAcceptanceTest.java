@@ -26,14 +26,14 @@ public class SectionAcceptanceTest {
         @DisplayName("지하철 노선에 구간을 정상적으로 등록한다")
         void testAddSectionSuccessfully() {
             // given
-            createStation("강남역");
-            createStation("역삼역");
-            createStation("선릉역");
-            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
+            Long gangnamStationId = createStationAndGetId("강남역");
+            Long yeoksamStationId = createStationAndGetId("역삼역");
+            Long seolleungStationId = createStationAndGetId("선릉역");
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, yeoksamStationId, 10));
             Long lineId = createLineResponse.jsonPath().getLong("id");
 
             // when
-            ExtractableResponse<Response> response = addSection(lineId, 2L, 3L, 8);
+            ExtractableResponse<Response> response = addSection(lineId, yeoksamStationId, seolleungStationId, 8);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -43,14 +43,14 @@ public class SectionAcceptanceTest {
         @DisplayName("상행역 기준으로 신규 구간을 추가한다")
         void testAddSectionByUpStation() {
             // given
-            createStation("강남역");
-            createStation("역삼역");
-            createStation("선릉역");
-            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 3L, 10));
+            Long gangnamStationId = createStationAndGetId("강남역");
+            Long yeoksamStationId = createStationAndGetId("역삼역");
+            Long seolleungStationId = createStationAndGetId("선릉역");
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, seolleungStationId, 10));
             Long lineId = createLineResponse.jsonPath().getLong("id");
 
             // when
-            ExtractableResponse<Response> response = addSection(lineId, 1L, 2L, 5);
+            ExtractableResponse<Response> response = addSection(lineId, gangnamStationId, yeoksamStationId, 5);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -60,14 +60,14 @@ public class SectionAcceptanceTest {
         @DisplayName("존재하지 않는 상행역으로 구간을 추가하려고 하면 실패한다")
         void testAddSectionWithNonExistentUpStation() {
             // given
-            createStation("강남역");
-            createStation("역삼역");
-            createStation("선릉역");
-            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
+            Long gangnamStationId = createStationAndGetId("강남역");
+            Long yeoksamStationId = createStationAndGetId("역삼역");
+            Long seolleungStationId = createStationAndGetId("선릉역");
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, yeoksamStationId, 10));
             Long lineId = createLineResponse.jsonPath().getLong("id");
 
             // when
-            ExtractableResponse<Response> response = addSection(lineId, 999L, 3L, 8);
+            ExtractableResponse<Response> response = addSection(lineId, 999L, seolleungStationId, 8);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -77,14 +77,14 @@ public class SectionAcceptanceTest {
         @DisplayName("상행역 기준으로 구간 추가 시 기존 구간 거리보다 큰 거리값을 요청하면 실패한다")
         void testAddSectionWithShorterDistanceThanExistingUpStation() {
             // given
-            createStation("강남역");
-            createStation("역삼역");
-            createStation("선릉역");
-            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 3L, 10));
+            Long gangnamStationId = createStationAndGetId("강남역");
+            Long yeoksamStationId = createStationAndGetId("역삼역");
+            Long seolleungStationId = createStationAndGetId("선릉역");
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, seolleungStationId, 10));
             Long lineId = createLineResponse.jsonPath().getLong("id");
 
             // when
-            ExtractableResponse<Response> response = addSection(lineId, 1L, 2L, 15);
+            ExtractableResponse<Response> response = addSection(lineId, gangnamStationId, yeoksamStationId, 15);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -94,14 +94,14 @@ public class SectionAcceptanceTest {
         @DisplayName("하행역 기준으로 신규 구간을 추가한다")
         void testAddSectionByDownStation() {
             // given
-            createStation("강남역");
-            createStation("역삼역");
-            createStation("선릉역");
-            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 3L, 10));
+            Long gangnamStationId = createStationAndGetId("강남역");
+            Long yeoksamStationId = createStationAndGetId("역삼역");
+            Long seolleungStationId = createStationAndGetId("선릉역");
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, seolleungStationId, 10));
             Long lineId = createLineResponse.jsonPath().getLong("id");
 
             // when
-            ExtractableResponse<Response> response = addSection(lineId, 2L, 3L, 8);
+            ExtractableResponse<Response> response = addSection(lineId, yeoksamStationId, seolleungStationId, 8);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
@@ -111,13 +111,13 @@ public class SectionAcceptanceTest {
         @DisplayName("존재하지 않는 하행역으로 구간을 추가하려고 하면 실패한다")
         void testAddSectionWithNonExistentDownStation() {
             // given
-            createStation("강남역");
-            createStation("역삼역");
-            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
+            Long gangnamStationId = createStationAndGetId("강남역");
+            Long yeoksamStationId = createStationAndGetId("역삼역");
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, yeoksamStationId, 10));
             Long lineId = createLineResponse.jsonPath().getLong("id");
 
             // when
-            ExtractableResponse<Response> response = addSection(lineId, 2L, 999L, 8);
+            ExtractableResponse<Response> response = addSection(lineId, yeoksamStationId, 999L, 8);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -127,14 +127,14 @@ public class SectionAcceptanceTest {
         @DisplayName("하행역 기준으로 구간 추가 시 기존 구간 거리보다 큰 거리값을 요청하면 실패한다")
         void testAddSectionWithShorterDistanceThanExistingDownStation() {
             // given
-            createStation("강남역");
-            createStation("역삼역");
-            createStation("선릉역");
-            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 3L, 10));
+            Long gangnamStationId = createStationAndGetId("강남역");
+            Long yeoksamStationId = createStationAndGetId("역삼역");
+            Long seolleungStationId = createStationAndGetId("선릉역");
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, seolleungStationId, 10));
             Long lineId = createLineResponse.jsonPath().getLong("id");
 
             // when
-            ExtractableResponse<Response> response = addSection(lineId, 2L, 3L, 15);
+            ExtractableResponse<Response> response = addSection(lineId, yeoksamStationId, seolleungStationId, 15);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -144,32 +144,33 @@ public class SectionAcceptanceTest {
         @DisplayName("구간 추가 후 마지막 구간에 다시 구간을 추가한다")
         void testAddSectionToEndOfLine() {
             // given
-            createStation("강남역");
-            createStation("역삼역");
-            createStation("선릉역");
-            createStation("삼성역");
-            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
+            Long gangnamStationId = createStationAndGetId("강남역");
+            Long yeoksamStationId = createStationAndGetId("역삼역");
+            Long seolleungStationId = createStationAndGetId("선릉역");
+            Long samsungStationId = createStationAndGetId("삼성역");
+
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, yeoksamStationId, 10));
             Long lineId = createLineResponse.jsonPath().getLong("id");
-            addSection(lineId, 2L, 3L, 8);
+            addSection(lineId, yeoksamStationId, seolleungStationId, 8);
 
             // when
-            ExtractableResponse<Response> response = addSection(lineId, 3L, 4L, 7);
+            ExtractableResponse<Response> response = addSection(lineId, seolleungStationId, samsungStationId, 7);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
         }
 
         @Test
-        @DisplayName("상행역과 하행역이 모두 기존 구간에 존재하면 추가를 실패한다")
+        @DisplayName("상행역과 하행역이 모두 기존 구간에 존재하면 추가 실패한다")
         void testAddSectionWithBothExistingStations() {
             // given
-            createStation("강남역");
-            createStation("선릉역");
-            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
+            Long gangnamStationId = createStationAndGetId("강남역");
+            Long seolleungStationId = createStationAndGetId("선릉역");
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, seolleungStationId, 10));
             Long lineId = createLineResponse.jsonPath().getLong("id");
 
             // when
-            ExtractableResponse<Response> response = addSection(lineId, 1L, 2L, 5);
+            ExtractableResponse<Response> response = addSection(lineId, gangnamStationId, seolleungStationId, 5);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -179,15 +180,15 @@ public class SectionAcceptanceTest {
         @DisplayName("구간이 이미 존재하는 노선에 구간을 추가하려고 할 때 상행역과 하행역이 모두 기존 구간과 다른 경우 추가를 실패한다")
         void testAddSectionWithBothNonExistingStations() {
             // given
-            createStation("강남역");
-            createStation("역삼역");
-            createStation("선릉역");
-            createStation("삼성역");
-            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
+            Long gangnamStationId = createStationAndGetId("강남역");
+            Long yeoksamStationId = createStationAndGetId("역삼역");
+            Long seolleungStationId = createStationAndGetId("선릉역");
+            Long samsungStationId = createStationAndGetId("삼성역");
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, yeoksamStationId, 10));
             Long lineId = createLineResponse.jsonPath().getLong("id");
 
             // when
-            ExtractableResponse<Response> response = addSection(lineId, 4L, 3L, 5);
+            ExtractableResponse<Response> response = addSection(lineId, samsungStationId, seolleungStationId, 5);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -210,16 +211,16 @@ public class SectionAcceptanceTest {
         @Test
         void testRemoveSection() {
             // given
-            createStation("강남역");
-            createStation("역삼역");
-            createStation("선릉역");
+            Long gangnamStationId = createStationAndGetId("강남역");
+            Long yeoksamStationId = createStationAndGetId("역삼역");
+            Long seolleungStationId = createStationAndGetId("선릉역");
 
-            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, yeoksamStationId, 10));
             Long lineId = createLineResponse.jsonPath().getLong("id");
-            addSection(lineId, 2L, 3L, 8);
+            addSection(lineId, yeoksamStationId, seolleungStationId, 8);
 
             // when
-            ExtractableResponse<Response> response = removeSection(lineId, 3L);
+            ExtractableResponse<Response> response = removeSection(lineId, seolleungStationId);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
@@ -235,13 +236,13 @@ public class SectionAcceptanceTest {
         @Test
         void testRemoveSectionWhenOnlyOneExists() {
             // given
-            createStation("강남역");
-            createStation("역삼역");
-            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
+            Long gangnamStationId = createStationAndGetId("강남역");
+            Long yeoksamStationId = createStationAndGetId("역삼역");
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, yeoksamStationId, 10));
             Long lineId = createLineResponse.jsonPath().getLong("id");
 
             // when
-            ExtractableResponse<Response> response = removeSection(lineId, 2L);
+            ExtractableResponse<Response> response = removeSection(lineId, yeoksamStationId);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -258,9 +259,9 @@ public class SectionAcceptanceTest {
         @Test
         void testRemoveSectionWithNonExistentUpStation() {
             // given
-            createStation("강남역");
-            createStation("역삼역");
-            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
+            Long gangnamStationId = createStationAndGetId("강남역");
+            Long yeoksamStationId = createStationAndGetId("역삼역");
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, yeoksamStationId, 10));
             Long lineId = createLineResponse.jsonPath().getLong("id");
 
             // when
@@ -281,9 +282,9 @@ public class SectionAcceptanceTest {
         @Test
         void testRemoveSectionWithNonExistentDownStation() {
             // given
-            createStation("강남역");
-            createStation("역삼역");
-            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", 1L, 2L, 10));
+            Long gangnamStationId = createStationAndGetId("강남역");
+            Long yeoksamStationId = createStationAndGetId("역삼역");
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, yeoksamStationId, 10));
             Long lineId = createLineResponse.jsonPath().getLong("id");
 
             // when

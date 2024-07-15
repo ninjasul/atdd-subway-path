@@ -420,26 +420,45 @@ public class LineCommandServiceWithoutMockTest {
     @Nested
     @DisplayName("구간 삭제 기능")
     class DeleteSection {
-        @Test
-        @DisplayName("지하철 노선에 존재하는 구간을 정상적으로 삭제한다")
-        void removeSectionSuccessfully() {
-            // given
-            Line line = new Line(1L, "2호선", "bg-red-600");
-            Station gangnamStation = new Station(1L, "강남역");
-            Station yeoksamStation = new Station(2L, "역삼역");
-            Station seolleungStation = new Station(3L, "선릉역");
+        private Line line;
 
-            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
+        private Station gangnamStation;
+
+        private Station yeoksamStation;
+
+        private Station seolleungStation;
+
+        private Section initialSection;
+
+        private Section additionalSection;
+
+        @BeforeEach
+        void setUp() {
+            saveInitialLine();
+        }
+
+        private void saveInitialLine() {
+            gangnamStation = new Station(1L, "강남역");
+            yeoksamStation = new Station(2L, "역삼역");
+            seolleungStation = new Station(3L, "선릉역");
+
+            stationRepository.save(gangnamStation);
+            stationRepository.save(yeoksamStation);
+            stationRepository.save(seolleungStation);
+
+            line = new Line(1L, "2호선", "bg-red-600");
+            initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
+            additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
 
             line.addSection(getStrategy(line, initialSection), initialSection);
             line.addSection(getStrategy(line, additionalSection), additionalSection);
 
             lineRepository.save(line);
-            stationRepository.save(gangnamStation);
-            stationRepository.save(yeoksamStation);
-            stationRepository.save(seolleungStation);
+        }
 
+        @Test
+        @DisplayName("지하철 노선에 존재하는 구간을 정상적으로 삭제한다")
+        void removeSectionSuccessfully() {
             // when
             lineCommandService.removeSection(1L, 3L);
 
@@ -452,23 +471,6 @@ public class LineCommandServiceWithoutMockTest {
         @Test
         @DisplayName("구간을 제거할 때 하행 종점역이 아닌 역을 제거하려고 하면 실패한다")
         void removeSectionWithInvalidDownStationFails() {
-            // given
-            Line line = new Line(1L, "2호선", "bg-red-600");
-            Station gangnamStation = new Station(1L, "강남역");
-            Station yeoksamStation = new Station(2L, "역삼역");
-            Station seolleungStation = new Station(3L, "선릉역");
-
-            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
-
-            line.addSection(getStrategy(line, initialSection), initialSection);
-            line.addSection(getStrategy(line, additionalSection), additionalSection);
-
-            lineRepository.save(line);
-            stationRepository.save(gangnamStation);
-            stationRepository.save(yeoksamStation);
-            stationRepository.save(seolleungStation);
-
             // when // then
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> lineCommandService.removeSection(1L, 2L))
@@ -478,23 +480,6 @@ public class LineCommandServiceWithoutMockTest {
         @Test
         @DisplayName("구간 삭제 시 없는 상행역을 요청하면 구간 삭제가 실패한다")
         void removeSectionWithNonExistentUpStation() {
-            // given
-            Line line = new Line(1L, "2호선", "bg-red-600");
-            Station gangnamStation = new Station(1L, "강남역");
-            Station yeoksamStation = new Station(2L, "역삼역");
-            Station seolleungStation = new Station(3L, "선릉역");
-
-            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
-
-            line.addSection(getStrategy(line, initialSection), initialSection);
-            line.addSection(getStrategy(line, additionalSection), additionalSection);
-
-            lineRepository.save(line);
-            stationRepository.save(gangnamStation);
-            stationRepository.save(yeoksamStation);
-            stationRepository.save(seolleungStation);
-
             // when // then
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> lineCommandService.removeSection(1L, 999L))
@@ -504,28 +489,12 @@ public class LineCommandServiceWithoutMockTest {
         @Test
         @DisplayName("구간 삭제 시 없는 하행역을 요청하면 구간 삭제가 실패한다")
         void removeSectionWithNonExistentDownStation() {
-            // given
-            Line line = new Line(1L, "2호선", "bg-red-600");
-            Station gangnamStation = new Station(1L, "강남역");
-            Station yeoksamStation = new Station(2L, "역삼역");
-            Station seolleungStation = new Station(3L, "선릉역");
-
-            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
-
-            line.addSection(getStrategy(line, initialSection), initialSection);
-            line.addSection(getStrategy(line, additionalSection), additionalSection);
-
-            lineRepository.save(line);
-            stationRepository.save(gangnamStation);
-            stationRepository.save(yeoksamStation);
-            stationRepository.save(seolleungStation);
-
             // when // then
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> lineCommandService.removeSection(1L, 1000L))
                 .withMessage(STATION_NOT_FOUND_MESSAGE);
         }
+
     }
 
     private SectionAdditionStrategy getStrategy(Line line, Section initialSection) {
