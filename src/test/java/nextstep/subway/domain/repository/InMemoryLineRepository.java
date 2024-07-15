@@ -7,9 +7,12 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.springframework.test.util.ReflectionTestUtils;
+
 import nextstep.subway.domain.model.Line;
 
 public class InMemoryLineRepository implements LineRepository {
+    private static final String ID = "id";
     private Map<Long, Line> lines = new HashMap<>();
     private AtomicLong idGenerator = new AtomicLong();
 
@@ -26,7 +29,7 @@ public class InMemoryLineRepository implements LineRepository {
     @Override
     public Line save(Line line) {
         if (line.getId() == null) {
-            line.generateId(idGenerator.incrementAndGet());
+            ReflectionTestUtils.setField(line, ID, idGenerator.incrementAndGet());
         }
 
         lines.put(line.getId(), line);

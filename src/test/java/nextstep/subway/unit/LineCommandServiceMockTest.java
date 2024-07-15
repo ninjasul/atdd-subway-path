@@ -5,6 +5,7 @@ import static nextstep.subway.domain.model.Sections.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +44,7 @@ public class LineCommandServiceMockTest {
         lineRepository = mock(LineRepository.class);
         stationRepository = mock(StationRepository.class);
         sectionAdditionStrategyFactory = new DefaultSectionAdditionStrategyFactory(
-            java.util.List.of(
+            List.of(
                 new AddSectionToLastStationStrategy(),
                 new AddSectionByUpStationStrategy(),
                 new AddSectionByDownStationStrategy()
