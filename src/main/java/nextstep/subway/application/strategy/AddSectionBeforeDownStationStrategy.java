@@ -10,6 +10,8 @@ import nextstep.subway.domain.service.SectionAdditionStrategy;
 
 @Component
 public class AddSectionBeforeDownStationStrategy implements SectionAdditionStrategy {
+    public static final String ADD_SECTION_BEFORE_DOWN_STATION_FAIL_MESSAGE = "하행역 앞에";
+
     @Override
     public boolean canAdd(Section existingSection, Section newSection, int maxIndex, int index) {
         return areOnlyDownStationSame(existingSection, newSection) &&
@@ -37,6 +39,11 @@ public class AddSectionBeforeDownStationStrategy implements SectionAdditionStrat
 
         int actualAdditionIndex = Math.min(index + 1, sections.size() - 1);
         sections.add(actualAdditionIndex, newSection);
+    }
+
+    @Override
+    public String getFailureCaseMessage() {
+        return ADD_SECTION_BEFORE_DOWN_STATION_FAIL_MESSAGE;
     }
 }
 

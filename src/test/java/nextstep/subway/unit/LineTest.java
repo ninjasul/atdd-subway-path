@@ -56,7 +56,7 @@ public class LineTest {
             // when // then
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> line.addSection(getStrategy(line, initialSection), initialSection))
-                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
+                .withMessageContaining(CANNOT_ADD_SECTION_MESSAGE);
         }
 
         @Test
@@ -91,7 +91,7 @@ public class LineTest {
             // when // then
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> line.addSection(getStrategy(line, duplicateSection), duplicateSection))
-                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
+                .withMessageContaining(CANNOT_ADD_SECTION_MESSAGE);
         }
 
         @Test
@@ -112,7 +112,7 @@ public class LineTest {
             // when // then
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> line.addSection(getStrategy(line, invalidSection), invalidSection))
-                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
+                .withMessageContaining(CANNOT_ADD_SECTION_MESSAGE);
         }
 
         @Test
@@ -174,7 +174,7 @@ public class LineTest {
             // when // then
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> line.addSection(getStrategy(line, invalidSection), invalidSection))
-                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
+                .withMessageContaining(CANNOT_ADD_SECTION_MESSAGE);
         }
 
         @Test
@@ -194,7 +194,7 @@ public class LineTest {
             // when // then
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> line.addSection(getStrategy(line, invalidSection), invalidSection))
-                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
+                .withMessageContaining(CANNOT_ADD_SECTION_MESSAGE);
         }
 
         @Test

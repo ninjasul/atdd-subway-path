@@ -303,7 +303,7 @@ public class LineCommandServiceMockTest {
             // when // then
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> lineCommandService.addSection(1L, sectionRequest))
-                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
+                .withMessageContaining(CANNOT_ADD_SECTION_MESSAGE);
         }
 
         @Test
@@ -377,7 +377,7 @@ public class LineCommandServiceMockTest {
             // when // then
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> lineCommandService.addSection(1L, sectionRequest))
-                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
+                .withMessageContaining(CANNOT_ADD_SECTION_MESSAGE);
         }
 
         @Test
@@ -432,7 +432,7 @@ public class LineCommandServiceMockTest {
             // when // then
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> lineCommandService.addSection(1L, sectionRequest))
-                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
+                .withMessageContaining(CANNOT_ADD_SECTION_MESSAGE);
         }
 
         @Test
@@ -457,7 +457,7 @@ public class LineCommandServiceMockTest {
             // when // then
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> lineCommandService.addSection(1L, sectionRequest))
-                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
+                .withMessageContaining(CANNOT_ADD_SECTION_MESSAGE);
         }
     }
 
