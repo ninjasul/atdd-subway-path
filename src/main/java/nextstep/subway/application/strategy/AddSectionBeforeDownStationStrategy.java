@@ -30,14 +30,13 @@ public class AddSectionBeforeDownStationStrategy implements SectionAdditionStrat
     }
 
     private void addNewSection(List<Section> sections, int index, Section newSection) {
-        int actualAdditionIndex = Math.min(index + 1, sections.size() - 1);
-
-        if (actualAdditionIndex == sections.size() - 1) {
+        if (index == sections.size() - 1) {
             sections.add(newSection);
             return;
         }
 
-        sections.add(index, newSection);
+        int actualAdditionIndex = Math.min(index + 1, sections.size() - 1);
+        sections.add(actualAdditionIndex, newSection);
     }
 }
 
