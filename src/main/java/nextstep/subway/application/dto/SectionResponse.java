@@ -56,7 +56,6 @@ public class SectionResponse {
             .build();
     }
 
-
     public static class SectionResponseBuilder {
         private Long sectionId;
         private Long upStationId;

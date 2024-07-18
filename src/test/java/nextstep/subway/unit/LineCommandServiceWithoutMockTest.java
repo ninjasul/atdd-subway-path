@@ -18,9 +18,9 @@ import nextstep.subway.application.dto.LineRequest;
 import nextstep.subway.application.dto.LineResponse;
 import nextstep.subway.application.dto.SectionRequest;
 import nextstep.subway.application.dto.SectionResponse;
-import nextstep.subway.application.strategy.AddSectionByDownStationStrategy;
-import nextstep.subway.application.strategy.AddSectionByUpStationStrategy;
-import nextstep.subway.application.strategy.AddSectionToLastStationStrategy;
+import nextstep.subway.application.strategy.AddSectionBeforeDownStationStrategy;
+import nextstep.subway.application.strategy.AddSectionAfterUpStationStrategy;
+import nextstep.subway.application.strategy.AddSectionAfterLastDownStationStrategy;
 import nextstep.subway.domain.model.Line;
 import nextstep.subway.domain.model.Section;
 import nextstep.subway.domain.model.Station;
@@ -45,9 +45,9 @@ public class LineCommandServiceWithoutMockTest {
         stationRepository = new InMemoryStationRepository();
         sectionAdditionStrategyFactory = new DefaultSectionAdditionStrategyFactory(
             List.of(
-                new AddSectionToLastStationStrategy(),
-                new AddSectionByUpStationStrategy(),
-                new AddSectionByDownStationStrategy()
+                new AddSectionAfterLastDownStationStrategy(),
+                new AddSectionAfterUpStationStrategy(),
+                new AddSectionBeforeDownStationStrategy()
             )
         );
         lineCommandService = new DefaultLineCommandService(lineRepository, stationRepository, sectionAdditionStrategyFactory);

@@ -52,8 +52,7 @@ public class DefaultLineCommandService implements LineCommandService {
             lineRequest.getColor()
         );
 
-        SectionAdditionStrategy strategy = sectionAdditionStrategyFactory.getStrategy(line, section);
-        line.addSection(strategy, section);
+        line.addSection(section);
 
         Line savedLine = lineRepository.save(line);
         return LineResponse.from(savedLine);

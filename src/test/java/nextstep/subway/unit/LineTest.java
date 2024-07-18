@@ -15,9 +15,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import nextstep.subway.application.DefaultSectionAdditionStrategyFactory;
-import nextstep.subway.application.strategy.AddSectionByDownStationStrategy;
-import nextstep.subway.application.strategy.AddSectionByUpStationStrategy;
-import nextstep.subway.application.strategy.AddSectionToLastStationStrategy;
+import nextstep.subway.application.strategy.AddSectionBeforeDownStationStrategy;
+import nextstep.subway.application.strategy.AddSectionAfterUpStationStrategy;
+import nextstep.subway.application.strategy.AddSectionAfterLastDownStationStrategy;
 import nextstep.subway.domain.model.Line;
 import nextstep.subway.domain.model.Section;
 import nextstep.subway.domain.model.Sections;
@@ -32,9 +32,9 @@ public class LineTest {
     void setUp() {
         sectionAdditionStrategyFactory = new DefaultSectionAdditionStrategyFactory(
             List.of(
-                new AddSectionToLastStationStrategy(),
-                new AddSectionByUpStationStrategy(),
-                new AddSectionByDownStationStrategy()
+                new AddSectionAfterLastDownStationStrategy(),
+                new AddSectionAfterUpStationStrategy(),
+                new AddSectionBeforeDownStationStrategy()
             )
         );
     }
@@ -56,7 +56,7 @@ public class LineTest {
             // when // then
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> line.addSection(getStrategy(line, initialSection), initialSection))
-                .withMessage(ALREADY_EXISTING_SECTION_MESSAGE);
+                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
         }
 
         @Test
@@ -91,7 +91,7 @@ public class LineTest {
             // when // then
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> line.addSection(getStrategy(line, duplicateSection), duplicateSection))
-                .withMessage(ALREADY_EXISTING_SECTION_MESSAGE);
+                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
         }
 
         @Test

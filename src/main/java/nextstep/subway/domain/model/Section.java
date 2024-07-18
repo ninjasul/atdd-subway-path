@@ -35,7 +35,17 @@ public class Section {
     protected Section() {
     }
 
-    public Section(Long id, Line line, Station upStation, Station downStation, Integer distance) {
+    public Section(Line line, Station upStation, Station downStation, Integer distance) {
+        this(null, line, upStation, downStation, distance);
+    }
+
+    public Section(
+        Long id,
+        Line line,
+        Station upStation,
+        Station downStation,
+        Integer distance
+    ) {
         this.id = id;
         this.line = line;
         this.upStation = upStation;
@@ -43,16 +53,8 @@ public class Section {
         this.distance = new SectionDistance(distance);
     }
 
-    public Section(Line line, Station upStation, Station downStation, Integer distance) {
-        this(null, line, upStation, downStation, distance);
-    }
-
     public static SectionBuilder builder() {
         return new SectionBuilder();
-    }
-
-    public void updateDistance(int newDistance) {
-        this.distance = new SectionDistance(newDistance);
     }
 
     public Long getId() {
@@ -91,8 +93,38 @@ public class Section {
         return distance.getValue();
     }
 
-    public void setLine(Line line) {
+    public void updateLine(Line line) {
         this.line = line;
+    }
+
+    public void updateUpStation(Station station, Integer distance) {
+        this.upStation = station;
+        this.distance = new SectionDistance(distance);
+    }
+
+    public void updateDownStation(Station station, Integer distance) {
+        this.downStation = station;
+        this.distance = new SectionDistance(distance);
+    }
+
+    public boolean hasSameUpStationWith(Station station) {
+        return this.upStation.equals(station);
+    }
+
+    public boolean hasSameDownStationWith(Station station) {
+        return this.downStation.equals(station);
+    }
+
+    public boolean hasDifferentBothStationsWith(Station station) {
+        return !this.upStation.equals(station) && !this.downStation.equals(station);
+    }
+
+    public boolean areBothStationsSame() {
+        if (this.upStation == null) {
+            return downStation == null;
+        }
+
+        return this.upStation.equals(this.downStation);
     }
 
     @Override

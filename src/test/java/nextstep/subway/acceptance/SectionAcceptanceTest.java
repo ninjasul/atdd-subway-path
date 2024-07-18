@@ -3,6 +3,8 @@ package nextstep.subway.acceptance;
 import static org.assertj.core.api.Assertions.*;
 import static nextstep.subway.acceptance.TestFixture.*;
 
+import java.util.List;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -37,23 +39,93 @@ public class SectionAcceptanceTest {
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+            ExtractableResponse<Response> lineResponse = getLine(lineId);
+            List<Long> stationIds = lineResponse.jsonPath().getList("stations.id", Long.class);
+
+            assertThat(stationIds).containsExactly(gangnamStationId, yeoksamStationId, seolleungStationId);
         }
 
         @Test
-        @DisplayName("상행역 기준으로 신규 구간을 추가한다")
-        void testAddSectionByUpStation() {
+        @DisplayName("기존 구간의 상행역 뒤에 신규 구간을 한 개 추가한 뒤 하행역 앞에 신규 구간을 하나 더 추가한다")
+        void testAddSectionAfterUpStationAndBeforeDownStation() {
             // given
             Long gangnamStationId = createStationAndGetId("강남역");
             Long yeoksamStationId = createStationAndGetId("역삼역");
             Long seolleungStationId = createStationAndGetId("선릉역");
-            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, seolleungStationId, 10));
+            Long samsungStationId = createStationAndGetId("삼성역");
+
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, samsungStationId, 10));
             Long lineId = createLineResponse.jsonPath().getLong("id");
 
+            addSection(lineId, gangnamStationId, seolleungStationId, 8);
+
             // when
-            ExtractableResponse<Response> response = addSection(lineId, gangnamStationId, yeoksamStationId, 5);
+            ExtractableResponse<Response> response = addSection(lineId, yeoksamStationId, seolleungStationId, 7);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+            ExtractableResponse<Response> lineResponse = getLine(lineId);
+            List<Long> stationIds = lineResponse.jsonPath().getList("stations.id", Long.class);
+
+            assertThat(stationIds).containsExactly(gangnamStationId, yeoksamStationId, seolleungStationId, samsungStationId);
+        }
+
+        @Test
+        @DisplayName("기존 구간의 하행역 앞에 신규 구간을 추가한 뒤 상행역 뒤에 신규 구간을 하나 더 추가한다")
+        void testAddSectionBeforeDownStationAndAfterUpStation() {
+            // given
+            Long gangnamStationId = createStationAndGetId("강남역");
+            Long yeoksamStationId = createStationAndGetId("역삼역");
+            Long seolleungStationId = createStationAndGetId("선릉역");
+            Long samsungStationId = createStationAndGetId("삼성역");
+
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, samsungStationId, 10));
+            Long lineId = createLineResponse.jsonPath().getLong("id");
+
+            addSection(lineId, yeoksamStationId, samsungStationId, 8);
+
+            getLine(lineId);
+
+            // when
+            ExtractableResponse<Response> response = addSection(lineId, yeoksamStationId, seolleungStationId, 7);
+
+            getLine(lineId);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+            ExtractableResponse<Response> lineResponse = getLine(lineId);
+            List<Long> stationIds = lineResponse.jsonPath().getList("stations.id", Long.class);
+
+            assertThat(stationIds).containsExactly(gangnamStationId, yeoksamStationId, seolleungStationId, samsungStationId);
+        }
+
+        @Test
+        @DisplayName("기존 구간의 상행역 뒤에 신규 구간을 두 개 추가한다")
+        void testAddSectionAfterUpStation() {
+            // given
+            Long gangnamStationId = createStationAndGetId("강남역");
+            Long yeoksamStationId = createStationAndGetId("역삼역");
+            Long seolleungStationId = createStationAndGetId("선릉역");
+            Long samsungStationId = createStationAndGetId("삼성역");
+
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, samsungStationId, 10));
+            Long lineId = createLineResponse.jsonPath().getLong("id");
+
+            addSection(lineId, gangnamStationId, seolleungStationId, 8);
+
+            // when
+            ExtractableResponse<Response> response = addSection(lineId, gangnamStationId, yeoksamStationId, 7);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+            ExtractableResponse<Response> lineResponse = getLine(lineId);
+            List<Long> stationIds = lineResponse.jsonPath().getList("stations.id", Long.class);
+
+            assertThat(stationIds).containsExactly(gangnamStationId, yeoksamStationId, seolleungStationId, samsungStationId);
         }
 
         @Test
@@ -91,20 +163,29 @@ public class SectionAcceptanceTest {
         }
 
         @Test
-        @DisplayName("하행역 기준으로 신규 구간을 추가한다")
-        void testAddSectionByDownStation() {
+        @DisplayName("기존 구간의 하행역 전에 신규 구간을 두 개 추가한다")
+        void testAddSectionBeforeDownStation() {
             // given
             Long gangnamStationId = createStationAndGetId("강남역");
             Long yeoksamStationId = createStationAndGetId("역삼역");
             Long seolleungStationId = createStationAndGetId("선릉역");
-            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, seolleungStationId, 10));
+            Long samsungStationId = createStationAndGetId("삼성역");
+
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, samsungStationId, 10));
             Long lineId = createLineResponse.jsonPath().getLong("id");
 
+            addSection(lineId, yeoksamStationId, samsungStationId, 8);
+
             // when
-            ExtractableResponse<Response> response = addSection(lineId, yeoksamStationId, seolleungStationId, 8);
+            ExtractableResponse<Response> response = addSection(lineId, seolleungStationId, samsungStationId, 7);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+
+            ExtractableResponse<Response> lineResponse = getLine(lineId);
+            List<Long> stationIds = lineResponse.jsonPath().getList("stations.id", Long.class);
+
+            assertThat(stationIds).containsExactly(gangnamStationId, yeoksamStationId, seolleungStationId, samsungStationId);
         }
 
         @Test
@@ -151,13 +232,43 @@ public class SectionAcceptanceTest {
 
             ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, yeoksamStationId, 10));
             Long lineId = createLineResponse.jsonPath().getLong("id");
+
             addSection(lineId, yeoksamStationId, seolleungStationId, 8);
 
             // when
             ExtractableResponse<Response> response = addSection(lineId, seolleungStationId, samsungStationId, 7);
 
             // then
+            ExtractableResponse<Response> lineResponse = getLine(lineId);
+            List<Long> stationIds = lineResponse.jsonPath().getList("stations.id", Long.class);
+
             assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+            assertThat(stationIds).containsExactly(gangnamStationId, yeoksamStationId, seolleungStationId, samsungStationId);
+        }
+
+        @Test
+        @DisplayName("구간 추가 후 첫 구간 앞에 다시 구간을 추가한다")
+        void testAddSectionToStartOfLine() {
+            // given
+            Long gangnamStationId = createStationAndGetId("강남역");
+            Long yeoksamStationId = createStationAndGetId("역삼역");
+            Long seolleungStationId = createStationAndGetId("선릉역");
+            Long samsungStationId = createStationAndGetId("삼성역");
+
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", yeoksamStationId, seolleungStationId, 10));
+            Long lineId = createLineResponse.jsonPath().getLong("id");
+
+            addSection(lineId, seolleungStationId, samsungStationId, 8);
+
+            // when
+            ExtractableResponse<Response> response = addSection(lineId, gangnamStationId, yeoksamStationId, 7);
+
+            // then
+            ExtractableResponse<Response> lineResponse = getLine(lineId);
+            List<Long> stationIds = lineResponse.jsonPath().getList("stations.id", Long.class);
+
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+            assertThat(stationIds).containsExactly(gangnamStationId, yeoksamStationId, seolleungStationId, samsungStationId);
         }
 
         @Test

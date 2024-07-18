@@ -1,12 +1,11 @@
 package nextstep.subway.application;
 
+import static nextstep.subway.domain.model.Sections.*;
+
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import nextstep.subway.application.strategy.AddSectionByDownStationStrategy;
-import nextstep.subway.application.strategy.AddSectionByUpStationStrategy;
-import nextstep.subway.application.strategy.AddSectionToLastStationStrategy;
 import nextstep.subway.domain.model.Line;
 import nextstep.subway.domain.model.Section;
 import nextstep.subway.domain.model.Sections;
@@ -23,15 +22,11 @@ public class DefaultSectionAdditionStrategyFactory implements SectionAdditionStr
 
     @Override
     public SectionAdditionStrategy getStrategy(Line line, Section section) {
-        Sections sections = line.getSections();
-
-        if (sections.contains(section)) {
-            throw new IllegalArgumentException(Sections.ALREADY_EXISTING_SECTION_MESSAGE);
-        }
+        List<Section> sections = line.getSections();
 
         return strategies.stream()
-            .filter(strategy -> strategy.canApply(sections, section))
+            .filter(strategy -> strategy.findAdditionSectionIndex(sections, section) > -1)
             .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException(Sections.CANNOT_ADD_SECTION_MESSAGE));
+            .orElseThrow(() -> new IllegalArgumentException(CANNOT_ADD_SECTION_MESSAGE));
     }
 }

@@ -7,16 +7,19 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.springframework.test.util.ReflectionTestUtils;
+
 import nextstep.subway.domain.model.Station;
 
 public class InMemoryStationRepository implements StationRepository {
+    private static final String ID = "id";
     private Map<Long, Station> stations = new HashMap<>();
     private AtomicLong idGenerator = new AtomicLong();
 
     @Override
     public Station save(Station station) {
         if (station.getId() == null) {
-            station.generateId(idGenerator.incrementAndGet());
+            ReflectionTestUtils.setField(station, ID, idGenerator.incrementAndGet());
         }
 
         stations.put(station.getId(), station);

@@ -62,6 +62,10 @@ public class Line {
         return this;
     }
 
+    public void addSection(Section section) {
+        sections.addSection(this, section);
+    }
+
     public void addSection(SectionAdditionStrategy sectionAdditionStrategy, Section section) {
         sections.addSection(this, sectionAdditionStrategy, section);
     }
@@ -101,7 +105,7 @@ public class Line {
         return Objects.hash(name, color);
     }
 
-    public Sections getSections() {
-        return sections;
+    public List<Section> getSections() {
+        return sections.getSections();
     }
 }
