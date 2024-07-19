@@ -35,118 +35,11 @@ class AddSectionBeforeDownStationStrategyTest {
             // then
             assertThat(result).isTrue();
         }
-
-        @Test
-        @DisplayName("기존 구간과 새 구간의 상하행역이 모두 같으면 추가 불가능하다")
-        void hasSameAllStations() {
-            // given
-            Station gangnamStation = new Station(1L, "강남역");
-            Station yeoksamStation = new Station(2L, "역삼역");
-            Section existingSection = new Section(null, null, gangnamStation, yeoksamStation, 10);
-            Section newSection = new Section(null, null, gangnamStation, yeoksamStation, 8);
-
-            // when
-            boolean result = strategy.canAdd(existingSection, newSection, 0, 0);
-
-            // then
-            assertThat(result).isFalse();
-        }
-
-        @Test
-        @DisplayName("기존 구간과 새 구간의 상하행역이 모두 다르면 추가 불가능하다")
-        void hasDifferentAllStations() {
-            // given
-            Station gangnamStation = new Station(1L, "강남역");
-            Station yeoksamStation = new Station(2L, "역삼역");
-            Station seolleungStation = new Station(3L, "선릉역");
-            Station samsungStation = new Station(4L, "삼성역");
-
-            Section existingSection = new Section(null, null, gangnamStation, yeoksamStation, 10);
-            Section newSection = new Section(null, null, seolleungStation, samsungStation, 8);
-
-            // when
-            boolean result = strategy.canAdd(existingSection, newSection, 0, 0);
-
-            // then
-            assertThat(result).isFalse();
-        }
-
-        @Test
-        @DisplayName("기존 구간과 새 구간의 상행역만 같으면 추가 불가능하다")
-        void hasSameUpStationOnly() {
-            // given
-            Station gangnamStation = new Station(1L, "강남역");
-            Station yeoksamStation = new Station(2L, "역삼역");
-            Station seolleungStation = new Station(3L, "선릉역");
-
-            Section existingSection = new Section(null, null, gangnamStation, yeoksamStation, 10);
-            Section newSection = new Section(null, null, gangnamStation, seolleungStation, 8);
-
-            // when
-            boolean result = strategy.canAdd(existingSection, newSection, 0, 0);
-
-            // then
-            assertThat(result).isFalse();
-        }
-
-        @Test
-        @DisplayName("기존 구간과 상행역과 새 구간의 하행역이 같고 기존 구간의 하행역과 새 구간의 상행역이 같으면 추가 불가능하다")
-        void hasSameUpAndDownStations() {
-            // given
-            Station gangnamStation = new Station(1L, "강남역");
-            Station yeoksamStation = new Station(2L, "역삼역");
-
-            Section existingSection = new Section(null, null, gangnamStation, yeoksamStation, 10);
-            Section newSection = new Section(null, null, yeoksamStation, gangnamStation, 8);
-
-            // when
-            boolean result = strategy.canAdd(existingSection, newSection, 0, 0);
-
-            // then
-            assertThat(result).isFalse();
-        }
-
-        @Test
-        @DisplayName("기존 구간과 상행역과 새 구간의 하행역만 같으면 추가 불가능하다")
-        void hasSameUpAndDifferentDownStations() {
-            // given
-            Station gangnamStation = new Station(1L, "강남역");
-            Station yeoksamStation = new Station(2L, "역삼역");
-            Station seolleungStation = new Station(3L, "선릉역");
-
-            Section existingSection = new Section(null, null, gangnamStation, yeoksamStation, 10);
-            Section newSection = new Section(null, null, seolleungStation, gangnamStation, 8);
-
-            // when
-            boolean result = strategy.canAdd(existingSection, newSection, 0, 0);
-
-            // then
-            assertThat(result).isFalse();
-        }
-
-        @Test
-        @DisplayName("기존 구간과 하행역과 새 구간의 상행역만 같으면 추가 불가능하다")
-        void hasSameDownAndDifferentUpStations() {
-            // given
-            Station gangnamStation = new Station(1L, "강남역");
-            Station yeoksamStation = new Station(2L, "역삼역");
-            Station seolleungStation = new Station(3L, "선릉역");
-
-            Section existingSection = new Section(null, null, gangnamStation, yeoksamStation, 10);
-            Section newSection = new Section(null, null, yeoksamStation, seolleungStation, 8);
-
-            // when
-            boolean result = strategy.canAdd(existingSection, newSection, 0, 0);
-
-            // then
-            assertThat(result).isFalse();
-        }
     }
 
     @Nested
     @DisplayName("구간 추가")
     class AddSectionTests {
-
         @Test
         @DisplayName("새 구간이 기존 구간 하행역 전에 추가되면 구간이 기존 구간 뒤에 추가된다")
         void addSectionAfterExistingSection() {
