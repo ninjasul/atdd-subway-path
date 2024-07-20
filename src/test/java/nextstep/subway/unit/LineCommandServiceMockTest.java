@@ -19,16 +19,15 @@ import nextstep.subway.application.dto.LineRequest;
 import nextstep.subway.application.dto.LineResponse;
 import nextstep.subway.application.dto.SectionRequest;
 import nextstep.subway.application.dto.SectionResponse;
-import nextstep.subway.application.strategy.addition.AddSectionBeforeDownStationStrategy;
-import nextstep.subway.application.strategy.addition.AddSectionAfterUpStationStrategy;
 import nextstep.subway.application.strategy.addition.AddSectionAfterLastDownStationStrategy;
+import nextstep.subway.application.strategy.addition.AddSectionAfterUpStationStrategy;
+import nextstep.subway.application.strategy.addition.AddSectionBeforeDownStationStrategy;
 import nextstep.subway.domain.model.Line;
 import nextstep.subway.domain.model.Section;
 import nextstep.subway.domain.model.Station;
 import nextstep.subway.domain.repository.LineRepository;
 import nextstep.subway.domain.repository.StationRepository;
 import nextstep.subway.domain.service.LineCommandService;
-import nextstep.subway.domain.service.SectionAdditionStrategy;
 
 public class LineCommandServiceMockTest {
     private LineRepository lineRepository;
@@ -393,7 +392,7 @@ public class LineCommandServiceMockTest {
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
             line.addSection(initialSection);
             Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
-            line.addSection(getStrategy(line, additionalSection), additionalSection);
+            line.addSection(additionalSection);
 
             when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
             when(stationRepository.findById(3L)).thenReturn(Optional.of(seolleungStation));
@@ -465,8 +464,8 @@ public class LineCommandServiceMockTest {
     @DisplayName("구간 삭제 기능")
     class DeleteSection {
         @Test
-        @DisplayName("지하철 노선에 존재하는 구간을 정상적으로 삭제한다")
-        void removeSectionSuccessfully() {
+        @DisplayName("첫 구간의 상행역을 제거하려고 하면 구간이 제거된다")
+        void removeFirstSectionSuccessfully() {
             // given
             Line line = new Line(1L,  "2호선", "bg-red-600");
             Station gangnamStation = new Station(1L, "강남역");
@@ -477,7 +476,32 @@ public class LineCommandServiceMockTest {
             Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
 
             line.addSection(initialSection);
-            line.addSection(getStrategy(line, additionalSection), additionalSection);
+            line.addSection(additionalSection);
+
+            when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
+            when(stationRepository.findById(1L)).thenReturn(Optional.of(gangnamStation));
+
+            // when
+            lineCommandService.removeSection(1L, 1L);
+
+            // then
+            verify(lineRepository, times(1)).save(any(Line.class));
+        }
+
+        @Test
+        @DisplayName("마지막 구간의 하행역을 제거하려고 하면 구간이 제거된다")
+        void removeLastSectionSuccessfully() {
+            // given
+            Line line = new Line(1L,  "2호선", "bg-red-600");
+            Station gangnamStation = new Station(1L, "강남역");
+            Station yeoksamStation = new Station(2L, "역삼역");
+            Station seolleungStation = new Station(3L, "선릉역");
+
+            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
+            Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
+
+            line.addSection(initialSection);
+            line.addSection(additionalSection);
 
             when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
             when(stationRepository.findById(3L)).thenReturn(Optional.of(seolleungStation));
@@ -490,8 +514,8 @@ public class LineCommandServiceMockTest {
         }
 
         @Test
-        @DisplayName("구간을 제거할 때 하행 종점역이 아닌 역을 제거하려고 하면 실패한다")
-        void removeSectionWithInvalidDownStationFails() {
+        @DisplayName("중간에 존재하는 역을 제거하려고 하면 구간이 제거된다")
+        void removeMiddleSectionSuccessfully() {
             // given
             Line line = new Line(1L,  "2호선", "bg-red-600");
             Station gangnamStation = new Station(1L, "강남역");
@@ -502,15 +526,16 @@ public class LineCommandServiceMockTest {
             Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
 
             line.addSection(initialSection);
-            line.addSection(getStrategy(line, additionalSection), additionalSection);
+            line.addSection(additionalSection);
 
             when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
             when(stationRepository.findById(2L)).thenReturn(Optional.of(yeoksamStation));
 
-            // when // then
-            assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> lineCommandService.removeSection(1L, 2L))
-                .withMessage(CANNOT_REMOVE_SECTION_MESSAGE);
+            // when
+            lineCommandService.removeSection(1L, 2L);
+
+            // then
+            verify(lineRepository, times(1)).save(any(Line.class));
         }
 
         @Test
@@ -526,7 +551,7 @@ public class LineCommandServiceMockTest {
             Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
 
             line.addSection(initialSection);
-            line.addSection(getStrategy(line, additionalSection), additionalSection);
+            line.addSection(additionalSection);
 
             when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
             when(stationRepository.findById(999L)).thenReturn(Optional.empty());
@@ -550,7 +575,7 @@ public class LineCommandServiceMockTest {
             Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
 
             line.addSection(initialSection);
-            line.addSection(getStrategy(line, additionalSection), additionalSection);
+            line.addSection(additionalSection);
 
             when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
             when(stationRepository.findById(1000L)).thenReturn(Optional.empty());
@@ -560,9 +585,5 @@ public class LineCommandServiceMockTest {
                 .isThrownBy(() -> lineCommandService.removeSection(1L, 1000L))
                 .withMessage(STATION_NOT_FOUND_MESSAGE);
         }
-    }
-
-    private SectionAdditionStrategy getStrategy(Line line, Section initialSection) {
-        return sectionAdditionStrategyFactory.getStrategy(line, initialSection);
     }
 }

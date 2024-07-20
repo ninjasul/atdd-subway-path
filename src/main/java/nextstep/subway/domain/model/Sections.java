@@ -1,7 +1,5 @@
 package nextstep.subway.domain.model;
 
-import static nextstep.subway.domain.model.Line.*;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,6 +20,7 @@ public class Sections {
     public static final String ALREADY_EXISTING_SECTION_MESSAGE = "이미 추가된 구간입니다.";
     public static final String CANNOT_ADD_SAME_STATIONS_MESSAGE = "상행역과 하행역이 같습니다.";
     public static final String CANNOT_ADD_SECTION_MESSAGE = "구간을 추가할 수 없습니다.";
+    public static final String NO_SECTION_TO_REMOVE_STATION_MESSAGE = "역을 삭제할 구간이 존재하지 않습니다.";
     public static final String CANNOT_REMOVE_SECTION_MESSAGE = "지하철 노선에 등록된 하행 종점역만 제거할 수 있습니다.";
     public static final String LAST_SECTION_CANNOT_BE_REMOVED_MESSAGE = "지하철 노선에 상행 종점역과 하행 종점역만 있는 경우 역을 삭제할 수 없습니다.";
 
@@ -71,7 +70,7 @@ public class Sections {
         return Collections.unmodifiableList(orderedSections);
     }
 
-    private Pair<Map<Station, Section>, Map<Station, Section>> getStationToSectionMaps() {
+    public Pair<Map<Station, Section>, Map<Station, Section>> getStationToSectionMaps() {
         Map<Station, Section> upStationToSectionMap = new HashMap<>();
         Map<Station, Section> downStationToSectionMap = new HashMap<>();
 
@@ -142,29 +141,40 @@ public class Sections {
         }
     }
 
-    private Station getLastDownStation() {
-        if (sections.isEmpty()) {
-            throw new IllegalStateException(SECTION_NOT_FOUND_MESSAGE);
-        }
-
-        return sections.get(sections.size() - 1).getDownStation();
-    }
-
     public void removeSection(Station station) {
         if (sections.size() <= 1) {
             throw new IllegalArgumentException(LAST_SECTION_CANNOT_BE_REMOVED_MESSAGE);
         }
 
-        if (!getLastDownStation().equals(station)) {
-            throw new IllegalArgumentException(CANNOT_REMOVE_SECTION_MESSAGE);
+        Pair<Map<Station, Section>, Map<Station, Section>> stationToSectionMaps = getStationToSectionMaps();
+
+        removeStationFromSections(
+            stationToSectionMaps.getSecond().get(station),
+            stationToSectionMaps.getFirst().get(station)
+        );
+    }
+
+    private void removeStationFromSections(Section firstSection, Section secondSection) {
+        // 중간에 있는 역을 삭제하는 경우
+        if (firstSection != null && secondSection != null) {
+            firstSection.updateDownStation(secondSection.getDownStation(), firstSection.getDistance() + secondSection.getDistance());
+            sections.remove(secondSection);
+            return;
         }
 
-        Section sectionToRemove = sections.stream()
-            .filter(section -> section.getDownStation().equals(station))
-            .findFirst()
-            .orElseThrow(() -> new IllegalArgumentException(CANNOT_REMOVE_SECTION_MESSAGE));
+        // 가장 마지막 구간의 하행역을 삭제하는 경우
+        if (firstSection != null && secondSection == null) {
+            sections.remove(firstSection);
+            return;
+        }
 
-        sections.remove(sectionToRemove);
+        // 가장 첫 구간의 상행역을 삭제하는 경우
+        if (firstSection == null && secondSection != null) {
+            sections.remove(secondSection);
+            return;
+        }
+
+        throw new IllegalArgumentException(NO_SECTION_TO_REMOVE_STATION_MESSAGE);
     }
 
     public List<Section> toUnmodifiableList() {

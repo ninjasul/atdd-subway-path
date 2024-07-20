@@ -231,22 +231,78 @@ public class LineTest {
     @Nested
     @DisplayName("구간 삭제 기능")
     class RemoveSection {
-
         @Test
-        @DisplayName("구간을 제거할 때 마지막 구간이면 구간 제거가 실패한다")
-        void removeLastSection() {
+        @DisplayName("첫 구간의 상행역을 제거하려고 하면 첫 구간이 제거된다")
+        void removeFirstSectionSuccessfully() {
             // given
             Line line = new Line("2호선", "bg-red-600");
+
             Station gangnamStation = new Station("강남역");
             Station yeoksamStation = new Station("역삼역");
+            Station seolleungStation = new Station("선릉역");
 
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            line.addSection(initialSection);
+            Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
 
-            // when // then
-            assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> line.removeSection(yeoksamStation))
-                .withMessage(Sections.LAST_SECTION_CANNOT_BE_REMOVED_MESSAGE);
+            line.addSection(initialSection);
+            line.addSection(additionalSection);
+
+            // when
+            line.removeSection(gangnamStation);
+
+            // then
+            assertThat(line.getOrderedUnmodifiableSections()).containsExactly(additionalSection);
+        }
+
+        @Test
+        @DisplayName("마지막 구간의 하행역을 제거하려고 하면 마지막 구간이 제거된다")
+        void removeLastSectionSuccessfully() {
+            // given
+            Line line = new Line("2호선", "bg-red-600");
+
+            Station gangnamStation = new Station("강남역");
+            Station yeoksamStation = new Station("역삼역");
+            Station seolleungStation = new Station("선릉역");
+
+            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
+            Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
+
+            line.addSection(initialSection);
+            line.addSection(additionalSection);
+
+            // when
+            line.removeSection(seolleungStation);
+
+            // then
+            assertThat(line.getOrderedUnmodifiableSections()).containsExactly(initialSection);
+        }
+
+        @Test
+        @DisplayName("중간에 존재하는 역을 제거하려고 하면 해당 역을 상행역으로 가지고 있는 구간이 제거된다")
+        void removeNextSectionSuccessfully() {
+            // given
+            Line line = new Line("2호선", "bg-red-600");
+
+            Station gangnamStation = new Station("강남역");
+            Station yeoksamStation = new Station("역삼역");
+            Station seolleungStation = new Station("선릉역");
+
+            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
+            Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
+
+            line.addSection(initialSection);
+            line.addSection(additionalSection);
+
+            // when
+            line.removeSection(yeoksamStation);
+
+            // then
+            List<Section> orderedSections = line.getOrderedUnmodifiableSections();
+
+            assertThat(orderedSections).containsExactly(initialSection);
+            assertThat(orderedSections).doesNotContain(additionalSection);
+            assertThat(initialSection.getUpStation()).isEqualTo(gangnamStation);
+            assertThat(initialSection.getDownStation()).isEqualTo(seolleungStation);
         }
 
         @Test
@@ -268,52 +324,7 @@ public class LineTest {
             Station nonExistentStation = new Station("없는역");
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> line.removeSection(nonExistentStation))
-                .withMessage(Sections.CANNOT_REMOVE_SECTION_MESSAGE);
-        }
-
-        @Test
-        @DisplayName("구간을 제거할 때 하행 종점역이 아닌 역을 제거하려고 하면 실패한다")
-        void removeSectionWithInvalidDownStationFails() {
-            // given
-            Line line = new Line("2호선", "bg-red-600");
-
-            Station gangnamStation = new Station("강남역");
-            Station yeoksamStation = new Station("역삼역");
-            Station seolleungStation = new Station("선릉역");
-
-            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
-
-            line.addSection(initialSection);
-            line.addSection(additionalSection);
-
-            // when // then
-            assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> line.removeSection(yeoksamStation))
-                .withMessage(Sections.CANNOT_REMOVE_SECTION_MESSAGE);
-        }
-
-        @Test
-        @DisplayName("구간을 제거할 때 해당 구간이 존재하면 구간이 제거된다")
-        void removeSectionSuccessfully() {
-            // given
-            Line line = new Line("2호선", "bg-red-600");
-
-            Station gangnamStation = new Station("강남역");
-            Station yeoksamStation = new Station("역삼역");
-            Station seolleungStation = new Station("선릉역");
-
-            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
-
-            line.addSection(initialSection);
-            line.addSection(additionalSection);
-
-            // when
-            line.removeSection(seolleungStation);
-
-            // then
-            assertThat(line.getUnmodifiableSections()).contains(initialSection);
+                .withMessage(NO_SECTION_TO_REMOVE_STATION_MESSAGE);
         }
     }
 

@@ -18,9 +18,9 @@ import nextstep.subway.application.dto.LineRequest;
 import nextstep.subway.application.dto.LineResponse;
 import nextstep.subway.application.dto.SectionRequest;
 import nextstep.subway.application.dto.SectionResponse;
-import nextstep.subway.application.strategy.addition.AddSectionBeforeDownStationStrategy;
-import nextstep.subway.application.strategy.addition.AddSectionAfterUpStationStrategy;
 import nextstep.subway.application.strategy.addition.AddSectionAfterLastDownStationStrategy;
+import nextstep.subway.application.strategy.addition.AddSectionAfterUpStationStrategy;
+import nextstep.subway.application.strategy.addition.AddSectionBeforeDownStationStrategy;
 import nextstep.subway.domain.model.Line;
 import nextstep.subway.domain.model.Section;
 import nextstep.subway.domain.model.Station;
@@ -29,7 +29,6 @@ import nextstep.subway.domain.repository.InMemoryStationRepository;
 import nextstep.subway.domain.repository.LineRepository;
 import nextstep.subway.domain.repository.StationRepository;
 import nextstep.subway.domain.service.LineCommandService;
-import nextstep.subway.domain.service.SectionAdditionStrategy;
 import nextstep.subway.domain.service.SectionAdditionStrategyFactory;
 
 public class LineCommandServiceWithoutMockTest {
@@ -394,7 +393,7 @@ public class LineCommandServiceWithoutMockTest {
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
             line.addSection(initialSection);
             Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
-            line.addSection(getStrategy(line, additionalSection), additionalSection);
+            line.addSection(additionalSection);
 
             lineRepository.save(line);
             stationRepository.save(gangnamStation);
@@ -451,30 +450,56 @@ public class LineCommandServiceWithoutMockTest {
             additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
 
             line.addSection(initialSection);
-            line.addSection(getStrategy(line, additionalSection), additionalSection);
+            line.addSection(additionalSection);
 
             lineRepository.save(line);
         }
 
         @Test
-        @DisplayName("지하철 노선에 존재하는 구간을 정상적으로 삭제한다")
-        void removeSectionSuccessfully() {
+        @DisplayName("첫 구간의 상행역을 제거하려고 하면 구간이 제거된다")
+        void removeFirstSectionSuccessfully() {
+            // when
+            lineCommandService.removeSection(1L, 1L);
+
+            // then
+            Line updatedLine = lineRepository.findById(1L).orElseThrow();
+
+            List<Section> orderedSections = updatedLine.getOrderedUnmodifiableSections();
+
+            assertThat(orderedSections).hasSize(1);
+            assertThat(orderedSections).containsExactly(additionalSection);
+        }
+
+        @Test
+        @DisplayName("마지막 구간의 하행역을 제거하려고 하면 구간이 제거된다")
+        void removeLastSectionSuccessfully() {
             // when
             lineCommandService.removeSection(1L, 3L);
 
             // then
             Line updatedLine = lineRepository.findById(1L).orElseThrow();
-            assertThat(updatedLine.getUnmodifiableSections()).hasSize(1);
-            assertThat(updatedLine.getUnmodifiableSections().get(0).getDownStation()).isEqualTo(yeoksamStation);
+
+            List<Section> orderedSections = updatedLine.getOrderedUnmodifiableSections();
+
+            assertThat(orderedSections).hasSize(1);
+            assertThat(orderedSections).containsExactly(initialSection);
         }
 
         @Test
-        @DisplayName("구간을 제거할 때 하행 종점역이 아닌 역을 제거하려고 하면 실패한다")
-        void removeSectionWithInvalidDownStationFails() {
-            // when // then
-            assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> lineCommandService.removeSection(1L, 2L))
-                .withMessage(CANNOT_REMOVE_SECTION_MESSAGE);
+        @DisplayName("중간에 존재하는 역을 제거하려고 하면 구간이 제거된다")
+        void removeMiddleSectionSuccessfully() {
+            // when
+            lineCommandService.removeSection(1L, 2L);
+
+            // then
+            Line updatedLine = lineRepository.findById(1L).orElseThrow();
+
+            List<Section> orderedSections = updatedLine.getOrderedUnmodifiableSections();
+
+            assertThat(orderedSections).containsExactly(initialSection);
+            assertThat(orderedSections).doesNotContain(additionalSection);
+            assertThat(initialSection.getUpStation()).isEqualTo(gangnamStation);
+            assertThat(initialSection.getDownStation()).isEqualTo(seolleungStation);
         }
 
         @Test
@@ -495,10 +520,6 @@ public class LineCommandServiceWithoutMockTest {
                 .withMessage(STATION_NOT_FOUND_MESSAGE);
         }
 
-    }
-
-    private SectionAdditionStrategy getStrategy(Line line, Section initialSection) {
-        return sectionAdditionStrategyFactory.getStrategy(line, initialSection);
     }
 }
 
