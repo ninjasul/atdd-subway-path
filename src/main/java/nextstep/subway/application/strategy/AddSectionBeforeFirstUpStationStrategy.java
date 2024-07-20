@@ -21,7 +21,7 @@ public class AddSectionBeforeFirstUpStationStrategy implements SectionAdditionSt
 
     @Override
     public void addSection(Line line, List<Section> sections, Section newSection) {
-        sections.add(0, newSection);
+        sections.add(newSection);
     }
 
     @Override

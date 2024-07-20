@@ -59,10 +59,12 @@ class AddSectionBeforeDownStationStrategyTest {
             // when
             strategy.addSection(line, sections, newSection);
 
+            List<Section> orderedSections = line.getOrderedUnmodifiableSections();
+
             // then
-            assertThat(sections).contains(newSection);
-            assertThat(sections).hasSize(2);
-            assertThat(sections.get(1)).isEqualTo(newSection);
+            assertThat(orderedSections).contains(newSection);
+            assertThat(orderedSections).hasSize(2);
+            assertThat(orderedSections.get(1)).isEqualTo(newSection);
         }
 
         @Test
@@ -87,10 +89,12 @@ class AddSectionBeforeDownStationStrategyTest {
             // when
             strategy.addSection(line, sections, newSection);
 
+            List<Section> orderedSections = line.getOrderedUnmodifiableSections();
+
             // then
-            assertThat(sections).contains(newSection);
-            assertThat(sections).hasSize(3);
-            assertThat(sections).containsExactly(firstSection, newSection, secondSection);
+            assertThat(orderedSections).contains(newSection);
+            assertThat(orderedSections).hasSize(3);
+            assertThat(orderedSections).containsExactly(firstSection, newSection, secondSection);
         }
 
         @Test
@@ -115,10 +119,12 @@ class AddSectionBeforeDownStationStrategyTest {
             // when
             strategy.addSection(line, sections, newSection);
 
+            List<Section> orderedSections = line.getOrderedUnmodifiableSections();
+
             // then
-            assertThat(sections).contains(newSection);
-            assertThat(sections).hasSize(3);
-            assertThat(sections).containsExactly(firstSection, secondSection, newSection);
+            assertThat(orderedSections).contains(newSection);
+            assertThat(orderedSections).hasSize(3);
+            assertThat(orderedSections).containsExactly(firstSection, secondSection, newSection);
         }
     }
 }

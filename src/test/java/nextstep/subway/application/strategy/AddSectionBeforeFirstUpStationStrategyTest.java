@@ -80,8 +80,10 @@ class AddSectionBeforeFirstUpStationStrategyTest {
             // when
             strategy.addSection(line, sections, newSection);
 
+            List<Section> orderedSections = line.getOrderedUnmodifiableSections();
+
             // then
-            assertThat(sections).containsExactly(newSection, existingSection);
+            assertThat(orderedSections).containsExactly(newSection, existingSection);
         }
 
         @Test
@@ -106,8 +108,10 @@ class AddSectionBeforeFirstUpStationStrategyTest {
             // when
             strategy.addSection(line, sections, newSection);
 
+            List<Section> orderedSections = line.getOrderedUnmodifiableSections();
+
             // then
-            assertThat(sections).containsExactly(newSection, firstSection, secondSection);
+            assertThat(orderedSections).containsExactly(newSection, firstSection, secondSection);
         }
     }
 }

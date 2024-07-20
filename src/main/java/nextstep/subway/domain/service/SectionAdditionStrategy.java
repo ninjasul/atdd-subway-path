@@ -10,19 +10,19 @@ public interface SectionAdditionStrategy {
 
     int EMPTY_SECTION_INDEX = 0;
 
-    default Integer findAdditionSectionIndex(List<Section> sections, Section newSection) {
+    default Section findExistingSectionForNewAddition(List<Section> sections, Section newSection) {
         if (sections.isEmpty()) {
-            return INVALID_SECTION_INDEX;
+            return null;
         }
 
         for (int i = 0; i < sections.size(); i++) {
             Section currentSection = sections.get(i);
             if (canAdd(currentSection, newSection, sections.size() - 1, i)) {
-                return i;
+                return currentSection;
             }
         }
 
-        return INVALID_SECTION_INDEX;
+        return null;
     }
 
     boolean canAdd(Section existingSection, Section newSection, int maxIndex, int index);

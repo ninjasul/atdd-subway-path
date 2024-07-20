@@ -1,12 +1,12 @@
 package nextstep.subway.application;
 
 import static nextstep.subway.domain.model.Sections.*;
-import static nextstep.subway.domain.service.SectionAdditionStrategy.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import nextstep.subway.domain.model.Line;
 import nextstep.subway.domain.model.Section;
@@ -29,8 +29,8 @@ public class DefaultSectionAdditionStrategyFactory implements SectionAdditionStr
 
         List<String> failureCaseMessages = new ArrayList<>();
         for (SectionAdditionStrategy strategy : strategies) {
-            int index = strategy.findAdditionSectionIndex(sections, section);
-            if (index > INVALID_SECTION_INDEX) {
+            Section existingSection = strategy.findExistingSectionForNewAddition(sections, section);
+            if (existingSection != null) {
                 return strategy;
             } else {
                 failureCaseMessages.add(strategy.getFailureCaseMessage());

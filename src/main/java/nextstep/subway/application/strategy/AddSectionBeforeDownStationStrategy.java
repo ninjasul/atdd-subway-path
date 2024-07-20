@@ -25,20 +25,9 @@ public class AddSectionBeforeDownStationStrategy implements SectionAdditionStrat
 
     @Override
     public void addSection(Line line, List<Section> sections, Section newSection) {
-        int index = findAdditionSectionIndex(sections, newSection);
-        Section existingSection = sections.get(index);
+        Section existingSection = findExistingSectionForNewAddition(sections, newSection);
         existingSection.updateDownStation(newSection.getUpStation(), calculateNewDistance(existingSection, newSection));
-        addNewSection(sections, index, newSection);
-    }
-
-    private void addNewSection(List<Section> sections, int index, Section newSection) {
-        if (index == sections.size() - 1) {
-            sections.add(newSection);
-            return;
-        }
-
-        int actualAdditionIndex = Math.min(index + 1, sections.size() - 1);
-        sections.add(actualAdditionIndex, newSection);
+        sections.add(newSection);
     }
 
     @Override

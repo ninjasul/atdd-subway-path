@@ -60,10 +60,12 @@ class AddSectionAfterUpStationStrategyTest {
             // when
             strategy.addSection(line, sections, newSection);
 
+            List<Section> orderedSections = line.getOrderedUnmodifiableSections();
+
             // then
-            assertThat(sections).contains(newSection);
-            assertThat(sections).hasSize(2);
-            assertThat(sections).containsExactly(newSection, existingSection);
+            assertThat(orderedSections).contains(newSection);
+            assertThat(orderedSections).hasSize(2);
+            assertThat(orderedSections).containsExactly(newSection, existingSection);
         }
 
         @Test
@@ -88,10 +90,12 @@ class AddSectionAfterUpStationStrategyTest {
             // when
             strategy.addSection(line, sections, newSection);
 
+            List<Section> orderedSections = line.getOrderedUnmodifiableSections();
+
             // then
-            assertThat(sections).contains(newSection);
-            assertThat(sections).hasSize(3);
-            assertThat(sections).containsExactly(newSection, firstSection, secondSection);
+            assertThat(orderedSections).contains(newSection);
+            assertThat(orderedSections).hasSize(3);
+            assertThat(orderedSections).containsExactly(newSection, firstSection, secondSection);
         }
 
         @Test
@@ -116,10 +120,12 @@ class AddSectionAfterUpStationStrategyTest {
             // when
             strategy.addSection(line, sections, newSection);
 
+            List<Section> orderedSections = line.getOrderedUnmodifiableSections();
+
             // then
-            assertThat(sections).contains(newSection);
-            assertThat(sections).hasSize(3);
-            assertThat(sections).containsExactly(firstSection, newSection, secondSection);
+            assertThat(orderedSections).contains(newSection);
+            assertThat(orderedSections).hasSize(3);
+            assertThat(orderedSections).containsExactly(firstSection, newSection, secondSection);
         }
     }
 }

@@ -25,10 +25,9 @@ public class AddSectionAfterUpStationStrategy implements SectionAdditionStrategy
 
     @Override
     public void addSection(Line line, List<Section> sections, Section newSection) {
-        int index = findAdditionSectionIndex(sections, newSection);
-        Section existingSection = sections.get(index);
+        Section existingSection = findExistingSectionForNewAddition(sections, newSection);
         existingSection.updateUpStation(newSection.getDownStation(), calculateNewDistance(existingSection, newSection));
-        sections.add(index, newSection);
+        sections.add(newSection);
     }
 
     @Override

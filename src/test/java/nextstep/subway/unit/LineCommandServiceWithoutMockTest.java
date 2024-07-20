@@ -204,7 +204,7 @@ public class LineCommandServiceWithoutMockTest {
             Station seolleungStation = new Station(3L, "선릉역");
 
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             lineRepository.save(line);
             stationRepository.save(gangnamStation);
@@ -235,7 +235,7 @@ public class LineCommandServiceWithoutMockTest {
             Station seolleungStation = new Station(3L, "선릉역");
 
             Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             lineRepository.save(line);
             stationRepository.save(gangnamStation);
@@ -265,7 +265,7 @@ public class LineCommandServiceWithoutMockTest {
             Station yeoksamStation = new Station(2L, "역삼역");
 
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
             lineRepository.save(line);
             stationRepository.save(gangnamStation);
             stationRepository.save(yeoksamStation);
@@ -288,7 +288,7 @@ public class LineCommandServiceWithoutMockTest {
             Station seolleungStation = new Station(3L, "선릉역");
 
             Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             lineRepository.save(line);
             stationRepository.save(gangnamStation);
@@ -313,7 +313,7 @@ public class LineCommandServiceWithoutMockTest {
             Station seolleungStation = new Station(3L, "선릉역");
 
             Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             lineRepository.save(line);
             stationRepository.save(gangnamStation);
@@ -343,7 +343,7 @@ public class LineCommandServiceWithoutMockTest {
             Station yeoksamStation = new Station(2L, "역삼역");
 
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
             lineRepository.save(line);
             stationRepository.save(gangnamStation);
             stationRepository.save(yeoksamStation);
@@ -366,7 +366,7 @@ public class LineCommandServiceWithoutMockTest {
             Station seolleungStation = new Station(3L, "선릉역");
 
             Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             lineRepository.save(line);
             stationRepository.save(gangnamStation);
@@ -392,7 +392,7 @@ public class LineCommandServiceWithoutMockTest {
             Station samsungStation = new Station(4L, "삼성역");
 
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
             Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
             line.addSection(getStrategy(line, additionalSection), additionalSection);
 
@@ -450,7 +450,7 @@ public class LineCommandServiceWithoutMockTest {
             initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
             additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
 
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
             line.addSection(getStrategy(line, additionalSection), additionalSection);
 
             lineRepository.save(line);

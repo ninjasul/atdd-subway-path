@@ -214,7 +214,7 @@ public class LineCommandServiceMockTest {
             Station seolleungStation = new Station(3L, "선릉역");
 
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
             when(stationRepository.findById(2L)).thenReturn(Optional.of(yeoksamStation));
@@ -242,7 +242,7 @@ public class LineCommandServiceMockTest {
             Station seolleungStation = new Station(3L, "선릉역");
 
             Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
             when(stationRepository.findById(1L)).thenReturn(Optional.of(gangnamStation));
@@ -269,7 +269,7 @@ public class LineCommandServiceMockTest {
             Station yeoksamStation = new Station(2L, "역삼역");
 
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
             when(stationRepository.findById(999L)).thenReturn(Optional.empty());
@@ -292,7 +292,7 @@ public class LineCommandServiceMockTest {
             Station seolleungStation = new Station(3L, "선릉역");
 
             Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
             when(stationRepository.findById(1L)).thenReturn(Optional.of(gangnamStation));
@@ -316,7 +316,7 @@ public class LineCommandServiceMockTest {
             Station seolleungStation = new Station(3L, "선릉역");
 
             Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
             when(stationRepository.findById(2L)).thenReturn(Optional.of(yeoksamStation));
@@ -343,7 +343,7 @@ public class LineCommandServiceMockTest {
             Station yeoksamStation = new Station(2L, "역삼역");
 
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
             when(stationRepository.findById(999L)).thenReturn(Optional.empty());
@@ -366,7 +366,7 @@ public class LineCommandServiceMockTest {
             Station seolleungStation = new Station(3L, "선릉역");
 
             Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
             when(stationRepository.findById(2L)).thenReturn(Optional.of(yeoksamStation));
@@ -391,7 +391,7 @@ public class LineCommandServiceMockTest {
             Station hantiStation = new Station(4L, "한티역");
 
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
             Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
             line.addSection(getStrategy(line, additionalSection), additionalSection);
 
@@ -421,7 +421,7 @@ public class LineCommandServiceMockTest {
             Station seolleungStation = new Station(3L, "선릉역");
 
             Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
             when(stationRepository.findById(1L)).thenReturn(Optional.of(gangnamStation));
@@ -446,7 +446,7 @@ public class LineCommandServiceMockTest {
             Station samsungStation = new Station(4L, "삼성역");
 
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
             when(stationRepository.findById(4L)).thenReturn(Optional.of(samsungStation));
@@ -476,7 +476,7 @@ public class LineCommandServiceMockTest {
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
             Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
 
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
             line.addSection(getStrategy(line, additionalSection), additionalSection);
 
             when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
@@ -501,7 +501,7 @@ public class LineCommandServiceMockTest {
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
             Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
 
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
             line.addSection(getStrategy(line, additionalSection), additionalSection);
 
             when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
@@ -525,7 +525,7 @@ public class LineCommandServiceMockTest {
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
             Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
 
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
             line.addSection(getStrategy(line, additionalSection), additionalSection);
 
             when(lineRepository.findById(1L)).thenReturn(Optional.of(line));
@@ -549,7 +549,7 @@ public class LineCommandServiceMockTest {
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
             Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
 
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
             line.addSection(getStrategy(line, additionalSection), additionalSection);
 
             when(lineRepository.findById(1L)).thenReturn(Optional.of(line));

@@ -2,6 +2,7 @@ package nextstep.subway.application;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import nextstep.subway.domain.model.Station;
 import nextstep.subway.domain.repository.StationRepository;
@@ -85,8 +86,12 @@ public class DefaultLineCommandService implements LineCommandService {
             .distance(sectionRequest.getDistance())
             .build();
 
-        SectionAdditionStrategy strategy = sectionAdditionStrategyFactory.getStrategy(line, section);
-        line.addSection(strategy, section);
+        if (CollectionUtils.isEmpty(line.getSections())) {
+            line.addSection(section);
+        } else {
+            SectionAdditionStrategy strategy = sectionAdditionStrategyFactory.getStrategy(line, section);
+            line.addSection(strategy, section);
+        }
 
         lineRepository.save(line);
         return SectionResponse.from(section);
