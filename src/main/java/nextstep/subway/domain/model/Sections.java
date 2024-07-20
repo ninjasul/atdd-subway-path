@@ -16,11 +16,9 @@ import nextstep.subway.domain.service.SectionAdditionStrategy;
 public class Sections {
     public static final String ALREADY_EXISTING_SECTION_MESSAGE = "이미 추가된 구간입니다.";
     public static final String CANNOT_ADD_SAME_STATIONS_MESSAGE = "상행역과 하행역이 같습니다.";
-    public static final String NO_EXISTING_SECTION_FOR_ADDITION_MESSAGE = "새 구간을 추가할 기존 구간이 존재하지 않습니다.";
     public static final String CANNOT_ADD_SECTION_MESSAGE = "구간을 추가할 수 없습니다.";
     public static final String CANNOT_REMOVE_SECTION_MESSAGE = "지하철 노선에 등록된 하행 종점역만 제거할 수 있습니다.";
     public static final String LAST_SECTION_CANNOT_BE_REMOVED_MESSAGE = "지하철 노선에 상행 종점역과 하행 종점역만 있는 경우 역을 삭제할 수 없습니다.";
-    public static final String NOT_EXISTING_SECTION_MESSAGE = "존재하지 않는 구간입니다.";
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
