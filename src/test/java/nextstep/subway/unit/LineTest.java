@@ -6,6 +6,7 @@ import static nextstep.subway.domain.model.Sections.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -331,10 +332,11 @@ public class LineTest {
             line.addSection(initialSection);
 
             // when
-            Section lastSection = line.getLastSection();
+            Optional<Section> lastSection = line.getLastSection();
 
             // then
-            assertThat(lastSection).isEqualTo(initialSection);
+            assertThat(lastSection.isPresent()).isEqualTo(true);
+            assertThat(lastSection.get()).isEqualTo(initialSection);
         }
 
 
