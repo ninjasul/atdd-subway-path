@@ -310,6 +310,24 @@ public class SectionAcceptanceTest {
     @Nested
     @DisplayName("구간 제거")
     class RemoveSection {
+        @DisplayName("지하철 노선의 첫 구간을 제거한다")
+        @Test
+        void testRemoveFirstSection() {
+            // given
+            Long gangnamStationId = createStationAndGetId("강남역");
+            Long yeoksamStationId = createStationAndGetId("역삼역");
+            Long seolleungStationId = createStationAndGetId("선릉역");
+
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, yeoksamStationId, 10));
+            Long lineId = createLineResponse.jsonPath().getLong("id");
+            addSection(lineId, yeoksamStationId, seolleungStationId, 8);
+
+            // when
+            ExtractableResponse<Response> response = removeSection(lineId, gangnamStationId);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        }
 
         /**
          * Given 지하철 노선을 생성하고
@@ -318,7 +336,26 @@ public class SectionAcceptanceTest {
          * When 지하철 노선의 마지막 역을 제거하면
          * Then 역이 제거된다
          */
-        @DisplayName("지하철 노선의 구간을 제거한다")
+        @DisplayName("지하철 노선의 마지막 구간을 제거한다")
+        @Test
+        void testRemoveLastSection() {
+            // given
+            Long gangnamStationId = createStationAndGetId("강남역");
+            Long yeoksamStationId = createStationAndGetId("역삼역");
+            Long seolleungStationId = createStationAndGetId("선릉역");
+
+            ExtractableResponse<Response> createLineResponse = createLine(new LineRequest("2호선", "bg-red-600", gangnamStationId, yeoksamStationId, 10));
+            Long lineId = createLineResponse.jsonPath().getLong("id");
+            addSection(lineId, yeoksamStationId, seolleungStationId, 8);
+
+            // when
+            ExtractableResponse<Response> response = removeSection(lineId, seolleungStationId);
+
+            // then
+            assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
+        }
+
+        @DisplayName("지하철 노선의 가운데 역으로 구간을 제거한다")
         @Test
         void testRemoveSection() {
             // given
@@ -331,7 +368,7 @@ public class SectionAcceptanceTest {
             addSection(lineId, yeoksamStationId, seolleungStationId, 8);
 
             // when
-            ExtractableResponse<Response> response = removeSection(lineId, seolleungStationId);
+            ExtractableResponse<Response> response = removeSection(lineId, yeoksamStationId);
 
             // then
             assertThat(response.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());

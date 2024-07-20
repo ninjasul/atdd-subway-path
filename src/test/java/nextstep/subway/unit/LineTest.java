@@ -303,6 +303,7 @@ public class LineTest {
             assertThat(orderedSections).doesNotContain(additionalSection);
             assertThat(initialSection.getUpStation()).isEqualTo(gangnamStation);
             assertThat(initialSection.getDownStation()).isEqualTo(seolleungStation);
+            assertThat(initialSection.getDistance()).isEqualTo(18);
         }
 
         @Test
