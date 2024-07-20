@@ -15,9 +15,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import nextstep.subway.application.DefaultSectionAdditionStrategyFactory;
-import nextstep.subway.application.strategy.AddSectionBeforeDownStationStrategy;
-import nextstep.subway.application.strategy.AddSectionAfterUpStationStrategy;
-import nextstep.subway.application.strategy.AddSectionAfterLastDownStationStrategy;
+import nextstep.subway.application.strategy.addition.AddSectionBeforeDownStationStrategy;
+import nextstep.subway.application.strategy.addition.AddSectionAfterUpStationStrategy;
+import nextstep.subway.application.strategy.addition.AddSectionAfterLastDownStationStrategy;
 import nextstep.subway.domain.model.Line;
 import nextstep.subway.domain.model.Section;
 import nextstep.subway.domain.model.Sections;

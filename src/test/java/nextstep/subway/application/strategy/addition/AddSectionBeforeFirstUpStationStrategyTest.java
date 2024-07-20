@@ -1,4 +1,4 @@
-package nextstep.subway.application.strategy;
+package nextstep.subway.application.strategy.addition;
 
 import static org.assertj.core.api.Assertions.*;
 
@@ -8,9 +8,8 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
+import nextstep.subway.application.strategy.addition.AddSectionBeforeFirstUpStationStrategy;
 import nextstep.subway.domain.model.Line;
 import nextstep.subway.domain.model.Section;
 import nextstep.subway.domain.model.Station;

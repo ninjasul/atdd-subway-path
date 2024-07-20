@@ -1,4 +1,4 @@
-package nextstep.subway.application.strategy;
+package nextstep.subway.application.strategy.addition;
 
 import java.util.List;
 

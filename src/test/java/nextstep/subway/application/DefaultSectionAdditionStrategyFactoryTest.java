@@ -8,10 +8,10 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import nextstep.subway.application.strategy.AddSectionAfterLastDownStationStrategy;
-import nextstep.subway.application.strategy.AddSectionAfterUpStationStrategy;
-import nextstep.subway.application.strategy.AddSectionBeforeDownStationStrategy;
-import nextstep.subway.application.strategy.AddSectionBeforeFirstUpStationStrategy;
+import nextstep.subway.application.strategy.addition.AddSectionAfterLastDownStationStrategy;
+import nextstep.subway.application.strategy.addition.AddSectionAfterUpStationStrategy;
+import nextstep.subway.application.strategy.addition.AddSectionBeforeDownStationStrategy;
+import nextstep.subway.application.strategy.addition.AddSectionBeforeFirstUpStationStrategy;
 import nextstep.subway.domain.model.Line;
 import nextstep.subway.domain.model.Section;
 import nextstep.subway.domain.model.Station;
