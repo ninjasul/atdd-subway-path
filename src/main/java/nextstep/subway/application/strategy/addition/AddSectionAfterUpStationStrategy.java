@@ -1,4 +1,4 @@
-package nextstep.subway.application.strategy;
+package nextstep.subway.application.strategy.addition;
 
 import java.util.List;
 
@@ -10,6 +10,7 @@ import nextstep.subway.domain.service.SectionAdditionStrategy;
 
 @Component
 public class AddSectionAfterUpStationStrategy implements SectionAdditionStrategy {
+    public static final String ADD_SECTION_AFTER_UP_STATION_FAIL_MESSAGE = "상행역 뒤에";
 
     @Override
     public boolean canAdd(Section existingSection, Section newSection, int maxIndex, int index) {
@@ -24,9 +25,13 @@ public class AddSectionAfterUpStationStrategy implements SectionAdditionStrategy
 
     @Override
     public void addSection(Line line, List<Section> sections, Section newSection) {
-        int index = findAdditionSectionIndex(sections, newSection);
-        Section existingSection = sections.get(index);
+        Section existingSection = findExistingSectionForNewAddition(sections, newSection);
         existingSection.updateUpStation(newSection.getDownStation(), calculateNewDistance(existingSection, newSection));
-        sections.add(index, newSection);
+        sections.add(newSection);
+    }
+
+    @Override
+    public String getFailureCaseMessage() {
+        return ADD_SECTION_AFTER_UP_STATION_FAIL_MESSAGE;
     }
 }

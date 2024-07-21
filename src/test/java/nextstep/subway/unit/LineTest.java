@@ -6,6 +6,7 @@ import static nextstep.subway.domain.model.Sections.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,9 +16,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 import nextstep.subway.application.DefaultSectionAdditionStrategyFactory;
-import nextstep.subway.application.strategy.AddSectionBeforeDownStationStrategy;
-import nextstep.subway.application.strategy.AddSectionAfterUpStationStrategy;
-import nextstep.subway.application.strategy.AddSectionAfterLastDownStationStrategy;
+import nextstep.subway.application.strategy.addition.AddSectionBeforeDownStationStrategy;
+import nextstep.subway.application.strategy.addition.AddSectionAfterUpStationStrategy;
+import nextstep.subway.application.strategy.addition.AddSectionAfterLastDownStationStrategy;
 import nextstep.subway.domain.model.Line;
 import nextstep.subway.domain.model.Section;
 import nextstep.subway.domain.model.Sections;
@@ -51,12 +52,12 @@ public class LineTest {
             Station gangnamStation = new Station("강남역");
             Station yeoksamStation = new Station("역삼역");
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             // when // then
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> line.addSection(getStrategy(line, initialSection), initialSection))
-                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
+                .withMessageContaining(CANNOT_ADD_SECTION_MESSAGE);
         }
 
         @Test
@@ -69,7 +70,7 @@ public class LineTest {
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
 
             // when
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             // then
             assertThat(line.getUnmodifiableSections()).contains(initialSection);
@@ -84,14 +85,14 @@ public class LineTest {
             Station seolleungStation = new Station("선릉역");
 
             Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             Section duplicateSection = new Section(line, gangnamStation, seolleungStation, 10);
 
             // when // then
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> line.addSection(getStrategy(line, duplicateSection), duplicateSection))
-                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
+                .withMessageContaining(CANNOT_ADD_SECTION_MESSAGE);
         }
 
         @Test
@@ -105,14 +106,14 @@ public class LineTest {
             Station samsungStation = new Station("삼성역");
 
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             Section invalidSection = new Section(line, seolleungStation, samsungStation, 5);
 
             // when // then
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> line.addSection(getStrategy(line, invalidSection), invalidSection))
-                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
+                .withMessageContaining(CANNOT_ADD_SECTION_MESSAGE);
         }
 
         @Test
@@ -125,7 +126,7 @@ public class LineTest {
             Station seolleungStation = new Station("선릉역");
 
             Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             Section newSection = new Section(line, gangnamStation, yeoksamStation, 5);
 
@@ -146,7 +147,7 @@ public class LineTest {
             Station seolleungStation = new Station("선릉역");
 
             Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             Section newSection = new Section(line, yeoksamStation, seolleungStation, 5);
 
@@ -167,14 +168,14 @@ public class LineTest {
             Station seolleungStation = new Station("선릉역");
 
             Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             Section invalidSection = new Section(line, gangnamStation, yeoksamStation, 15);
 
             // when // then
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> line.addSection(getStrategy(line, invalidSection), invalidSection))
-                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
+                .withMessageContaining(CANNOT_ADD_SECTION_MESSAGE);
         }
 
         @Test
@@ -187,14 +188,14 @@ public class LineTest {
             Station seolleungStation = new Station("선릉역");
 
             Section initialSection = new Section(line, gangnamStation, seolleungStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             Section invalidSection = new Section(line, yeoksamStation, seolleungStation, 15);
 
             // when // then
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> line.addSection(getStrategy(line, invalidSection), invalidSection))
-                .withMessage(CANNOT_ADD_SECTION_MESSAGE);
+                .withMessageContaining(CANNOT_ADD_SECTION_MESSAGE);
         }
 
         @Test
@@ -208,9 +209,10 @@ public class LineTest {
             Station hantiStation = new Station("한티역");
 
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
             Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
-            line.addSection(getStrategy(line, additionalSection), additionalSection);
+
+            line.addSection(initialSection);
+            line.addSection(additionalSection);
 
             Section newSection = new Section(line, seolleungStation, hantiStation, 7);
 
@@ -229,22 +231,79 @@ public class LineTest {
     @Nested
     @DisplayName("구간 삭제 기능")
     class RemoveSection {
-
         @Test
-        @DisplayName("구간을 제거할 때 마지막 구간이면 구간 제거가 실패한다")
-        void removeLastSection() {
+        @DisplayName("첫 구간의 상행역을 제거하려고 하면 첫 구간이 제거된다")
+        void removeFirstSectionSuccessfully() {
             // given
             Line line = new Line("2호선", "bg-red-600");
+
             Station gangnamStation = new Station("강남역");
             Station yeoksamStation = new Station("역삼역");
+            Station seolleungStation = new Station("선릉역");
 
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
 
-            // when // then
-            assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> line.removeSection(yeoksamStation))
-                .withMessage(Sections.LAST_SECTION_CANNOT_BE_REMOVED_MESSAGE);
+            line.addSection(initialSection);
+            line.addSection(additionalSection);
+
+            // when
+            line.removeSection(gangnamStation);
+
+            // then
+            assertThat(line.getOrderedUnmodifiableSections()).containsExactly(additionalSection);
+        }
+
+        @Test
+        @DisplayName("마지막 구간의 하행역을 제거하려고 하면 마지막 구간이 제거된다")
+        void removeLastSectionSuccessfully() {
+            // given
+            Line line = new Line("2호선", "bg-red-600");
+
+            Station gangnamStation = new Station("강남역");
+            Station yeoksamStation = new Station("역삼역");
+            Station seolleungStation = new Station("선릉역");
+
+            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
+            Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
+
+            line.addSection(initialSection);
+            line.addSection(additionalSection);
+
+            // when
+            line.removeSection(seolleungStation);
+
+            // then
+            assertThat(line.getOrderedUnmodifiableSections()).containsExactly(initialSection);
+        }
+
+        @Test
+        @DisplayName("중간에 존재하는 역을 제거하려고 하면 해당 역을 상행역으로 가지고 있는 구간이 제거된다")
+        void removeNextSectionSuccessfully() {
+            // given
+            Line line = new Line("2호선", "bg-red-600");
+
+            Station gangnamStation = new Station("강남역");
+            Station yeoksamStation = new Station("역삼역");
+            Station seolleungStation = new Station("선릉역");
+
+            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
+            Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
+
+            line.addSection(initialSection);
+            line.addSection(additionalSection);
+
+            // when
+            line.removeSection(yeoksamStation);
+
+            // then
+            List<Section> orderedSections = line.getOrderedUnmodifiableSections();
+
+            assertThat(orderedSections).containsExactly(initialSection);
+            assertThat(orderedSections).doesNotContain(additionalSection);
+            assertThat(initialSection.getUpStation()).isEqualTo(gangnamStation);
+            assertThat(initialSection.getDownStation()).isEqualTo(seolleungStation);
+            assertThat(initialSection.getDistance()).isEqualTo(18);
         }
 
         @Test
@@ -257,61 +316,16 @@ public class LineTest {
             Station seolleungStation = new Station("선릉역");
 
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
-
             Section newSection = new Section(line, yeoksamStation, seolleungStation, 8);
-            line.addSection(getStrategy(line, newSection), newSection);
+
+            line.addSection(initialSection);
+            line.addSection(newSection);
 
             // when // then
             Station nonExistentStation = new Station("없는역");
             assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> line.removeSection(nonExistentStation))
-                .withMessage(Sections.CANNOT_REMOVE_SECTION_MESSAGE);
-        }
-
-        @Test
-        @DisplayName("구간을 제거할 때 하행 종점역이 아닌 역을 제거하려고 하면 실패한다")
-        void removeSectionWithInvalidDownStationFails() {
-            // given
-            Line line = new Line("2호선", "bg-red-600");
-
-            Station gangnamStation = new Station("강남역");
-            Station yeoksamStation = new Station("역삼역");
-            Station seolleungStation = new Station("선릉역");
-
-            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
-
-            line.addSection(getStrategy(line, initialSection), initialSection);
-            line.addSection(getStrategy(line, additionalSection), additionalSection);
-
-            // when // then
-            assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> line.removeSection(yeoksamStation))
-                .withMessage(Sections.CANNOT_REMOVE_SECTION_MESSAGE);
-        }
-
-        @Test
-        @DisplayName("구간을 제거할 때 해당 구간이 존재하면 구간이 제거된다")
-        void removeSectionSuccessfully() {
-            // given
-            Line line = new Line("2호선", "bg-red-600");
-
-            Station gangnamStation = new Station("강남역");
-            Station yeoksamStation = new Station("역삼역");
-            Station seolleungStation = new Station("선릉역");
-
-            Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 8);
-
-            line.addSection(getStrategy(line, initialSection), initialSection);
-            line.addSection(getStrategy(line, additionalSection), additionalSection);
-
-            // when
-            line.removeSection(seolleungStation);
-
-            // then
-            assertThat(line.getUnmodifiableSections()).contains(initialSection);
+                .withMessage(NO_SECTION_TO_REMOVE_STATION_MESSAGE);
         }
     }
 
@@ -327,13 +341,14 @@ public class LineTest {
             Station gangnamStation = new Station("강남역");
             Station yeoksamStation = new Station("역삼역");
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             // when
-            Section lastSection = line.getLastSection();
+            Optional<Section> lastSection = line.getLastSection();
 
             // then
-            assertThat(lastSection).isEqualTo(initialSection);
+            assertThat(lastSection.isPresent()).isEqualTo(true);
+            assertThat(lastSection.get()).isEqualTo(initialSection);
         }
 
 
@@ -346,7 +361,7 @@ public class LineTest {
             Station yeoksamStation = new Station("역삼역");
 
             Section initialSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            line.addSection(getStrategy(line, initialSection), initialSection);
+            line.addSection(initialSection);
 
             // when
             List<Section> sections = line.getUnmodifiableSections();

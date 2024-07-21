@@ -6,19 +6,23 @@ import nextstep.subway.domain.model.Line;
 import nextstep.subway.domain.model.Section;
 
 public interface SectionAdditionStrategy {
-    default Integer findAdditionSectionIndex(List<Section> sections, Section newSection) {
+    int INVALID_SECTION_INDEX = -1;
+
+    int EMPTY_SECTION_INDEX = 0;
+
+    default Section findExistingSectionForNewAddition(List<Section> sections, Section newSection) {
         if (sections.isEmpty()) {
-            return -1;
+            return null;
         }
 
         for (int i = 0; i < sections.size(); i++) {
             Section currentSection = sections.get(i);
             if (canAdd(currentSection, newSection, sections.size() - 1, i)) {
-                return i;
+                return currentSection;
             }
         }
 
-        return -1;
+        return null;
     }
 
     boolean canAdd(Section existingSection, Section newSection, int maxIndex, int index);
@@ -32,4 +36,6 @@ public interface SectionAdditionStrategy {
     default Integer calculateNewDistance(Section existingSection, Section newSection) {
         return existingSection.getDistance() - newSection.getDistance();
     }
+
+    String getFailureCaseMessage();
 }

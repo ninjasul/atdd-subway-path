@@ -2,7 +2,6 @@ package nextstep.subway.application.dto;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import nextstep.subway.domain.model.Line;
 
@@ -57,12 +56,8 @@ public class LineResponse {
     }
 
     public static LineResponse from(Line line) {
-        List<StationResponse> stations = line.getUnmodifiableSections().stream()
-            .flatMap(section -> Stream.of(
-                new StationResponse(section.getUpStationId(), section.getUpStationName()),
-                new StationResponse(section.getDownStationId(), section.getDownStationName())
-            ))
-            .distinct()
+        List<StationResponse> stations = line.getOrderedUnmodifiableStations().stream()
+            .map(station -> new StationResponse(station.getId(), station.getName()))
             .collect(Collectors.toList());
 
         return new LineResponse(line.getId(), line.getName(), line.getColor(), stations);

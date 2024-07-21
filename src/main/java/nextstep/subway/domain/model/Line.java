@@ -1,7 +1,9 @@
 package nextstep.subway.domain.model;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -13,7 +15,7 @@ import nextstep.subway.domain.service.SectionAdditionStrategy;
 
 @Entity
 public class Line {
-    public static final String SECTION_NOT_FOUND = "섹션이 없습니다.";
+    public static final String SECTION_NOT_FOUND_MESSAGE = "구간을 찾을 수 없습니다.";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -72,18 +74,30 @@ public class Line {
 
     public void removeSection(Station station) {
         if (sections.isEmpty()) {
-            throw new IllegalStateException(SECTION_NOT_FOUND);
+            throw new IllegalStateException(SECTION_NOT_FOUND_MESSAGE);
         }
 
         sections.removeSection(station);
+    }
+
+    public Optional<Section> getLastSection() {
+        return sections.getLastSection();
+    }
+
+    public List<Section> getSections() {
+        return sections.getSections();
     }
 
     public List<Section> getUnmodifiableSections() {
         return sections.toUnmodifiableList();
     }
 
-    public Section getLastSection() {
-        return sections.getLastSection();
+    public List<Section> getOrderedUnmodifiableSections() {
+        return sections.getOrderedUnmodifiableSections();
+    }
+
+    public List<Station> getOrderedUnmodifiableStations() {
+        return sections.getOrderedUnmodifiableStations();
     }
 
     @Override
@@ -103,9 +117,5 @@ public class Line {
     @Override
     public int hashCode() {
         return Objects.hash(name, color);
-    }
-
-    public List<Section> getSections() {
-        return sections.getSections();
     }
 }
