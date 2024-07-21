@@ -25,7 +25,7 @@ public class DefaultSectionAdditionStrategyFactory implements SectionAdditionStr
 
     @Override
     public SectionAdditionStrategy getStrategy(Line line, Section section) {
-        List<Section> sections = line.getSections();
+        List<Section> sections = line.getUnmodifiableSections();
 
         List<String> failureCaseMessages = new ArrayList<>();
         for (SectionAdditionStrategy strategy : strategies) {

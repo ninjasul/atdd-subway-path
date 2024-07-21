@@ -86,7 +86,7 @@ public class DefaultLineCommandService implements LineCommandService {
             .distance(sectionRequest.getDistance())
             .build();
 
-        if (CollectionUtils.isEmpty(line.getSections())) {
+        if (CollectionUtils.isEmpty(line.getUnmodifiableSections())) {
             line.addSection(section);
         } else {
             SectionAdditionStrategy strategy = sectionAdditionStrategyFactory.getStrategy(line, section);

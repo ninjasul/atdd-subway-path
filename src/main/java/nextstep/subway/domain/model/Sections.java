@@ -66,7 +66,7 @@ public class Sections {
 
         Pair<Map<Station, Section>, Map<Station, Section>> stationToSectionMaps = getStationToSectionMaps();
         Section firstSection = getFirstSection(stationToSectionMaps.getSecond());
-        List<Section> orderedSections = getOrderedSections(firstSection, stationToSectionMaps);
+        List<Section> orderedSections = getOrderedSections(firstSection, stationToSectionMaps.getFirst());
         return Collections.unmodifiableList(orderedSections);
     }
 
@@ -107,15 +107,16 @@ public class Sections {
 
     private List<Section> getOrderedSections(
         Section firstSection,
-        Pair<Map<Station, Section>, Map<Station, Section>> stationToSectionMaps
+        Map<Station, Section> upstationToSectionMap
     ) {
         List<Section> orderedSections = new ArrayList<>();
         Section currentSection = firstSection;
 
         while (currentSection != null) {
             orderedSections.add(currentSection);
-            currentSection = stationToSectionMaps.getFirst().get(currentSection.getDownStation());
+            currentSection = upstationToSectionMap.get(currentSection.getDownStation());
         }
+
         return orderedSections;
     }
 
