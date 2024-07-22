@@ -24,6 +24,8 @@ public class Sections {
     public static final String CANNOT_REMOVE_SECTION_MESSAGE = "지하철 노선에 등록된 하행 종점역만 제거할 수 있습니다.";
     public static final String LAST_SECTION_CANNOT_BE_REMOVED_MESSAGE = "지하철 노선에 상행 종점역과 하행 종점역만 있는 경우 역을 삭제할 수 없습니다.";
 
+    public static final String ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION_MESSAGE = "인덱스가 범위를 벗어났습니다.";
+
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
     private final List<Section> sections = new ArrayList<>();
 
@@ -126,10 +128,10 @@ public class Sections {
         sections.add(newSection);
     }
 
-    public void addSection(Line line, SectionAdditionStrategy sectionAdditionStrategy, Section newSection) {
+    public void addSection(SectionAdditionStrategy sectionAdditionStrategy, Line line, Section newSection) {
         validateSectionAddition(newSection);
         newSection.updateLine(line);
-        sectionAdditionStrategy.addSection(line, sections, newSection);
+        sectionAdditionStrategy.addSection(line, newSection);
     }
 
     private void validateSectionAddition(Section newSection) {
@@ -164,13 +166,13 @@ public class Sections {
         }
 
         // 가장 마지막 구간의 하행역을 삭제하는 경우
-        if (firstSection != null && secondSection == null) {
+        if (firstSection != null) {
             sections.remove(firstSection);
             return;
         }
 
         // 가장 첫 구간의 상행역을 삭제하는 경우
-        if (firstSection == null && secondSection != null) {
+        if (secondSection != null) {
             sections.remove(secondSection);
             return;
         }
@@ -192,5 +194,17 @@ public class Sections {
 
     public List<Section> getSections() {
         return sections;
+    }
+
+    public int size() {
+        return sections.size();
+    }
+
+    public Section get(int index) {
+        if (index < 0 || index >= sections.size()) {
+            throw new ArrayIndexOutOfBoundsException(ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION_MESSAGE);
+        }
+
+        return sections.get(index);
     }
 }

@@ -12,6 +12,7 @@ import nextstep.subway.application.strategy.addition.AddSectionAfterLastDownStat
 import nextstep.subway.application.strategy.addition.AddSectionAfterUpStationStrategy;
 import nextstep.subway.application.strategy.addition.AddSectionBeforeDownStationStrategy;
 import nextstep.subway.application.strategy.addition.AddSectionBeforeFirstUpStationStrategy;
+import nextstep.subway.application.strategy.addition.AddSectionToEmptySectionsStrategy;
 import nextstep.subway.domain.model.Line;
 import nextstep.subway.domain.model.Section;
 import nextstep.subway.domain.model.Station;
@@ -22,15 +23,34 @@ class DefaultSectionAdditionStrategyFactoryTest {
     private final SectionAdditionStrategy addSectionBeforeFirstUpStationStrategy = new AddSectionBeforeFirstUpStationStrategy();
     private final SectionAdditionStrategy addSectionBeforeDownStationStrategy = new AddSectionBeforeDownStationStrategy();
     private final SectionAdditionStrategy addSectionAfterLastDownStationStrategy = new AddSectionAfterLastDownStationStrategy();
+    private final SectionAdditionStrategy addSectionToEmptySectionsStrategy = new AddSectionToEmptySectionsStrategy();
 
     private final DefaultSectionAdditionStrategyFactory factory = new DefaultSectionAdditionStrategyFactory(
         List.of(
             addSectionBeforeFirstUpStationStrategy,
             addSectionAfterUpStationStrategy,
             addSectionBeforeDownStationStrategy,
-            addSectionAfterLastDownStationStrategy
+            addSectionAfterLastDownStationStrategy,
+            addSectionToEmptySectionsStrategy
         )
     );
+
+    @Test
+    @DisplayName("빈 노선에 구간을 추가하려고 하면 빈 구간 목록에 새 구간을 추가하는 전략이 선택된다")
+    void whenAddSectionToEmptySections() {
+        // given
+        Line line = new Line("2호선", "green");
+        Station gangnamStation = new Station(1L, "강남역");
+        Station yeoksamStation = new Station(2L, "역삼역");
+
+        Section newSection = new Section(line, gangnamStation, yeoksamStation, 10);
+
+        // when
+        SectionAdditionStrategy strategy = factory.getStrategy(line, newSection);
+
+        // then
+        assertThat(strategy).isEqualTo(addSectionToEmptySectionsStrategy);
+    }
 
     @Test
     @DisplayName("기존 구간과 상행역과 새 구간의 하행역만 같을 때 첫번째 상행역 앞에 구간이 새 구간을 추가하는 전략이 선택된다")

@@ -2,14 +2,10 @@ package nextstep.subway.application.strategy.addition;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import nextstep.subway.application.strategy.addition.AddSectionAfterLastDownStationStrategy;
 import nextstep.subway.domain.model.Line;
 import nextstep.subway.domain.model.Section;
 import nextstep.subway.domain.model.Station;
@@ -30,7 +26,7 @@ class AddSectionAfterLastDownStationStrategyTest {
             Section newSection = new Section(null, null, yeoksamStation, new Station(3L, "선릉역"), 8);
 
             // when
-            boolean result = strategy.canAdd(existingSection, newSection, 0, 0);
+            boolean result = strategy.canAddToExistingSection(existingSection, newSection, 0, 0);
 
             // then
             assertThat(result).isTrue();
@@ -42,20 +38,25 @@ class AddSectionAfterLastDownStationStrategyTest {
     class AddSectionTests {
 
         @Test
-        @DisplayName("구간이 비어 있을 때 새 구간을 추가하면 구간이 추가된다")
+        @DisplayName("기존 구간의 마지막에 새 구간을 추가하면 구간이 추가된다")
         void addSectionSuccess() {
             // given
             Line line = new Line("2호선", "green");
             Station gangnamStation = new Station(1L, "강남역");
             Station yeoksamStation = new Station(2L, "역삼역");
+            Station seolleungStation = new Station(3L, "선릉역");
+
             Section newSection = new Section(line, gangnamStation, yeoksamStation, 10);
-            List<Section> sections = new ArrayList<>();
+            Section additionalSection = new Section(line, yeoksamStation, seolleungStation, 10);
+
+            line.addSection(newSection);
+
 
             // when
-            strategy.addSection(line, sections, newSection);
+            strategy.addSection(line, additionalSection);
 
             // then
-            assertThat(sections).contains(newSection);
+            assertThat(line.getUnmodifiableSections()).contains(newSection);
         }
     }
 }

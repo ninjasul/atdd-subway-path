@@ -1,7 +1,5 @@
 package nextstep.subway.application.strategy.addition;
 
-import java.util.List;
-
 import org.springframework.stereotype.Component;
 
 import nextstep.subway.domain.model.Line;
@@ -13,7 +11,7 @@ public class AddSectionAfterLastDownStationStrategy implements SectionAdditionSt
     public static final String ADD_SECTION_AFTER_LAST_DOWN_STATION_FAIL_MESSAGE = "마지막 하행역 뒤에";
 
     @Override
-    public boolean canAdd(Section existingSection, Section newSection, int maxIndex, int index) {
+    public boolean canAddToExistingSection(Section existingSection, Section newSection, int maxIndex, int index) {
         return index == maxIndex &&
             index > INVALID_SECTION_INDEX &&
             existingSection.hasSameDownStationWith(newSection.getUpStation()) &&
@@ -21,8 +19,8 @@ public class AddSectionAfterLastDownStationStrategy implements SectionAdditionSt
     }
 
     @Override
-    public void addSection(Line line, List<Section> sections, Section newSection) {
-        sections.add(newSection);
+    public void addSection(Line line, Section newSection) {
+        line.addSection(newSection);
     }
 
     @Override

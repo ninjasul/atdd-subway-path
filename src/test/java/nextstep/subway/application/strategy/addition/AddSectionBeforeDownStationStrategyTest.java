@@ -8,7 +8,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-import nextstep.subway.application.strategy.addition.AddSectionBeforeDownStationStrategy;
 import nextstep.subway.domain.model.Line;
 import nextstep.subway.domain.model.Section;
 import nextstep.subway.domain.model.Station;
@@ -31,7 +30,7 @@ class AddSectionBeforeDownStationStrategyTest {
             Section newSection = new Section(null, null, yeoksamStation, seolleungStation, 8);
 
             // when
-            boolean result = strategy.canAdd(existingSection, newSection, 0, 0);
+            boolean result = strategy.canAddToExistingSection(existingSection, newSection, 0, 0);
 
             // then
             assertThat(result).isTrue();
@@ -53,12 +52,10 @@ class AddSectionBeforeDownStationStrategyTest {
             Section existingSection = new Section(line, gangnamStation, seolleungStation, 10);
             line.addSection(existingSection);
 
-            List<Section> sections = line.getSections();
-
             Section newSection = new Section(line, yeoksamStation, seolleungStation, 5);
 
             // when
-            strategy.addSection(line, sections, newSection);
+            strategy.addSection(line, newSection);
 
             List<Section> orderedSections = line.getOrderedUnmodifiableSections();
 
@@ -83,12 +80,10 @@ class AddSectionBeforeDownStationStrategyTest {
             line.addSection(firstSection);
             line.addSection(secondSection);
 
-            List<Section> sections = line.getSections();
-
             Section newSection = new Section(line, yeoksamStation, seolleungStation, 8);
 
             // when
-            strategy.addSection(line, sections, newSection);
+            strategy.addSection(line, newSection);
 
             List<Section> orderedSections = line.getOrderedUnmodifiableSections();
 
@@ -113,12 +108,10 @@ class AddSectionBeforeDownStationStrategyTest {
             line.addSection(firstSection);
             line.addSection(secondSection);
 
-            List<Section> sections = line.getSections();
-
             Section newSection = new Section(line, seolleungStation, samsungStation, 5);
 
             // when
-            strategy.addSection(line, sections, newSection);
+            strategy.addSection(line, newSection);
 
             List<Section> orderedSections = line.getOrderedUnmodifiableSections();
 
