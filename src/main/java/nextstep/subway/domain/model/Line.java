@@ -79,10 +79,6 @@ public class Line {
         sections.removeSection(station);
     }
 
-    public Optional<Section> getLastSection() {
-        return sections.getLastSection();
-    }
-
     public Sections getSections() {
         return sections;
     }

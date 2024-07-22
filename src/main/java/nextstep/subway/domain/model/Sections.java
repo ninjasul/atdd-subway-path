@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
@@ -90,21 +89,6 @@ public class Sections {
             .filter(section -> !downStationToSectionMap.containsKey(section.getUpStation()))
             .findFirst()
             .orElse(null);
-    }
-
-    public Optional<Section> getLastSection() {
-        if (sections.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return getLastSection(getStationToSectionMaps().getFirst());
-    }
-
-    private Optional<Section> getLastSection(Map<Station, Section> upStationToSectionMap) {
-        return sections
-            .stream()
-            .filter(section -> !upStationToSectionMap.containsKey(section.getDownStation()))
-            .findFirst();
     }
 
     private List<Section> getOrderedSections(
