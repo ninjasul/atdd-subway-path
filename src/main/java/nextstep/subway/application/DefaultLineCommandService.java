@@ -89,8 +89,8 @@ public class DefaultLineCommandService implements LineCommandService {
         SectionAdditionStrategy strategy = sectionAdditionStrategyFactory.getStrategy(line, section);
         line.addSection(strategy, section);
 
-        Line savedLine = lineRepository.save(line);
-        return SectionResponse.from(savedLine.getSections().get(0));
+        lineRepository.save(line);
+        return SectionResponse.from(section);
     }
 
     @Override

@@ -56,7 +56,7 @@ public class LineCommandController {
     }
 
     private String getSectionUriString(SectionResponse section) {
-        return String.format("/lines/%s/sections/%s", section.getLineId().toString(), section.getSectionId().toString());
+        return String.format("/lines/%s/sections", section.getLineId().toString());
     }
 
     @DeleteMapping("/{lineId}/sections")
