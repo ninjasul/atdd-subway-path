@@ -20,9 +20,7 @@ public class Sections {
     public static final String CANNOT_ADD_SAME_STATIONS_MESSAGE = "상행역과 하행역이 같습니다.";
     public static final String CANNOT_ADD_SECTION_MESSAGE = "구간을 추가할 수 없습니다.";
     public static final String NO_SECTION_TO_REMOVE_STATION_MESSAGE = "역을 삭제할 구간이 존재하지 않습니다.";
-    public static final String CANNOT_REMOVE_SECTION_MESSAGE = "지하철 노선에 등록된 하행 종점역만 제거할 수 있습니다.";
     public static final String LAST_SECTION_CANNOT_BE_REMOVED_MESSAGE = "지하철 노선에 상행 종점역과 하행 종점역만 있는 경우 역을 삭제할 수 없습니다.";
-
     public static final String ARRAY_INDEX_OUT_OF_BOUNDS_EXCEPTION_MESSAGE = "인덱스가 범위를 벗어났습니다.";
 
     @OneToMany(mappedBy = "line", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, orphanRemoval = true)
