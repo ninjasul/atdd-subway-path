@@ -17,10 +17,12 @@ public class DefaultPathFinder implements PathFinder {
     public static final String PATH_NOT_FOUND_ERROR_MESSAGE = "경로를 찾을 수 없습니다.";
 
     private final WeightedMultigraph<Station, DefaultWeightedEdge> graph;
+    private final DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath;
 
     public DefaultPathFinder(List<Line> lines) {
         this.graph = new WeightedMultigraph<>(DefaultWeightedEdge.class);
         initializeGraph(lines);
+        this.dijkstraShortestPath = new DijkstraShortestPath<>(graph);
     }
 
     private void initializeGraph(List<Line> lines) {
@@ -35,12 +37,10 @@ public class DefaultPathFinder implements PathFinder {
     }
 
     public Path findPath(Station source, Station target) {
-        DijkstraShortestPath<Station, DefaultWeightedEdge> dijkstraShortestPath = new DijkstraShortestPath<>(graph);
-
         GraphPath<Station, DefaultWeightedEdge> path;
         try {
-            path = dijkstraShortestPath.getPath(source, target);
-        } catch (IllegalArgumentException e) {
+            path = this.dijkstraShortestPath.getPath(source, target);
+        } catch (Exception e) {
             throw new IllegalStateException(PATH_NOT_FOUND_ERROR_MESSAGE);
         }
 
