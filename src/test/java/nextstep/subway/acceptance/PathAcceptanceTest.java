@@ -11,14 +11,18 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.annotation.DirtiesContext;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.application.dto.LineRequest;
 
 @DisplayName("지하철 경로 검색")
-public class PathAcceptanceTest extends AcceptanceTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.DEFINED_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+public class PathAcceptanceTest {
     private Long 강남역;
     private Long 역삼역;
     private Long 교대역;
@@ -32,8 +36,6 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     @BeforeEach
     public void setUp() {
-        super.setUp();
-
         신논현역 = createStationAndGetId("신논현역");
 
         교대역 = createStationAndGetId("교대역");
@@ -54,6 +56,11 @@ public class PathAcceptanceTest extends AcceptanceTest {
         addSection(신분당선, 강남역, 양재역, 10);
     }
 
+    /**
+     * Given 같은 노선에 존재하는 두 역을 생성하고
+     * When 지하철 경로를 조회하면
+     * Then 경로가 정상적으로 조회된다
+     */
     @Test
     @DisplayName("같은 노선에 존재하는 두 역을 조회하는 경우 경로가 정상적으로 조회된다")
     void findPathInSameLine() {
@@ -66,6 +73,11 @@ public class PathAcceptanceTest extends AcceptanceTest {
         assertThat(getResponseDistance(response)).isEqualTo(20);
     }
 
+    /**
+     * Given 출발역에서 한번 환승이 필요한 경로를 생성하고
+     * When 지하철 경로를 조회하면
+     * Then 경로가 정상적으로 조회된다
+     */
     @Test
     @DisplayName("출발역에서 한번 환승을 해야 도착역에 다다를 수 있는 경우 경로가 정상적으로 조회된다")
     void findPathWithOneTransfer() {
@@ -78,6 +90,11 @@ public class PathAcceptanceTest extends AcceptanceTest {
         assertThat(getResponseDistance(response)).isEqualTo(18);
     }
 
+    /**
+     * Given 출발역에서 두번 환승이 필요한 경로를 생성하고
+     * When 지하철 경로를 조회하면
+     * Then 경로가 정상적으로 조회된다
+     */
     @Test
     @DisplayName("출발역에서 두번 환승을 해야 도착역에 다다를 수 있는 경우 경로가 정상적으로 조회된다")
     void findPathWithTwoTransfers() {
@@ -94,6 +111,11 @@ public class PathAcceptanceTest extends AcceptanceTest {
         assertThat(getResponseDistance(response)).isEqualTo(21);
     }
 
+    /**
+     * Given 출발역과 도착역이 같은 경우를 생성하고
+     * When 지하철 경로를 조회하면
+     * Then 역이 하나만 조회된다
+     */
     @Test
     @DisplayName("출발역과 도착역이 같은 경우 역이 하나만 조회된다.")
     void findPathWhenSourceAndTargetAreSame() {
@@ -106,6 +128,11 @@ public class PathAcceptanceTest extends AcceptanceTest {
         assertThat(getResponseDistance(response)).isEqualTo(0);
     }
 
+    /**
+     * Given 출발역과 도착역이 연결되지 않은 경우를 생성하고
+     * When 지하철 경로를 조회하면
+     * Then 예외가 발생한다
+     */
     @Test
     @DisplayName("출발역과 도착역이 연결이 되어 있지 않은 경우 예외가 발생한다")
     void findPathWhenSourceAndTargetAreNotConnected() {
@@ -116,6 +143,11 @@ public class PathAcceptanceTest extends AcceptanceTest {
         assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
     }
 
+    /**
+     * Given 존재하지 않는 출발역을 생성하고
+     * When 지하철 경로를 조회하면
+     * Then 예외가 발생한다
+     */
     @ParameterizedTest
     @NullSource
     @ValueSource(longs = {999L})
@@ -129,6 +161,11 @@ public class PathAcceptanceTest extends AcceptanceTest {
         assertThat(statusCode).isBetween(400, 599);
     }
 
+    /**
+     * Given 존재하지 않는 도착역을 생성하고
+     * When 지하철 경로를 조회하면
+     * Then 예외가 발생한다
+     */
     @ParameterizedTest
     @NullSource
     @ValueSource(longs = {999L})
@@ -148,9 +185,5 @@ public class PathAcceptanceTest extends AcceptanceTest {
 
     private int getResponseDistance(ExtractableResponse<Response> response) {
         return response.jsonPath().getInt("distance");
-    }
-
-    private static String getResponseMessage(ExtractableResponse<Response> response) {
-        return response.jsonPath().getString("message");
     }
 }
