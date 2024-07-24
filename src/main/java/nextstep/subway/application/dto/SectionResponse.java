@@ -25,40 +25,20 @@ public class SectionResponse {
         return lineId;
     }
 
-    public void setLineId(Long lineId) {
-        this.lineId = lineId;
-    }
-
     public Long getSectionId() {
         return sectionId;
-    }
-
-    public void setSectionId(Long sectionId) {
-        this.sectionId = sectionId;
     }
 
     public Long getUpStationId() {
         return upStationId;
     }
 
-    public void setUpStationId(Long upStationId) {
-        this.upStationId = upStationId;
-    }
-
     public Long getDownStationId() {
         return downStationId;
     }
 
-    public void setDownStationId(Long downStationId) {
-        this.downStationId = downStationId;
-    }
-
     public Integer getDistance() {
         return distance;
-    }
-
-    public void setDistance(Integer distance) {
-        this.distance = distance;
     }
 
     public static SectionResponse from(Section section) {
