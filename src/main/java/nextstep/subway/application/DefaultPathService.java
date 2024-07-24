@@ -29,7 +29,7 @@ public class DefaultPathService implements PathService {
         Station target = findStationOrElseThrow(targetId);
 
         List<Line> lines = lineRepository.findAll();
-        return PathResponse.from(Path.from(lines, source, target));
+        return PathResponse.from(Path.of(lines, source, target));
     }
 
     private Station findStationOrElseThrow(Long stationId) {
