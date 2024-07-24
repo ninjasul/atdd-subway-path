@@ -1,5 +1,6 @@
 package nextstep.subway.application.strategy.addition;
 
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import nextstep.subway.domain.model.Line;
@@ -7,6 +8,7 @@ import nextstep.subway.domain.model.Section;
 import nextstep.subway.domain.service.SectionAdditionStrategy;
 
 @Component
+@Order(2)
 public class AddSectionBeforeFirstUpStationStrategy implements SectionAdditionStrategy {
     public static final String ADD_SECTION_BEFORE_FIRST_UP_STATION_FAIL_MESSAGE = "첫 번째 상행역 앞에";
 

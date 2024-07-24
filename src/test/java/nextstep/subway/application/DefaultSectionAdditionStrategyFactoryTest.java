@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import nextstep.subway.application.strategy.addition.AddSectionAfterLastDownStationStrategy;
 import nextstep.subway.application.strategy.addition.AddSectionAfterUpStationStrategy;
@@ -17,23 +19,41 @@ import nextstep.subway.domain.model.Line;
 import nextstep.subway.domain.model.Section;
 import nextstep.subway.domain.model.Station;
 import nextstep.subway.domain.service.SectionAdditionStrategy;
+import nextstep.subway.domain.service.SectionAdditionStrategyFactory;
 
+@SpringBootTest
 class DefaultSectionAdditionStrategyFactoryTest {
-    private final SectionAdditionStrategy addSectionAfterUpStationStrategy = new AddSectionAfterUpStationStrategy();
-    private final SectionAdditionStrategy addSectionBeforeFirstUpStationStrategy = new AddSectionBeforeFirstUpStationStrategy();
-    private final SectionAdditionStrategy addSectionBeforeDownStationStrategy = new AddSectionBeforeDownStationStrategy();
-    private final SectionAdditionStrategy addSectionAfterLastDownStationStrategy = new AddSectionAfterLastDownStationStrategy();
-    private final SectionAdditionStrategy addSectionToEmptySectionsStrategy = new AddSectionToEmptySectionsStrategy();
+    @Autowired
+    private AddSectionToEmptySectionsStrategy addSectionToEmptySectionsStrategy;
 
-    private final DefaultSectionAdditionStrategyFactory factory = new DefaultSectionAdditionStrategyFactory(
-        List.of(
+    @Autowired
+    private AddSectionBeforeFirstUpStationStrategy addSectionBeforeFirstUpStationStrategy;
+
+    @Autowired
+    private AddSectionAfterUpStationStrategy addSectionAfterUpStationStrategy;
+
+    @Autowired
+    private AddSectionBeforeDownStationStrategy addSectionBeforeDownStationStrategy;
+
+    @Autowired
+    private AddSectionAfterLastDownStationStrategy addSectionAfterLastDownStationStrategy;
+
+    @Autowired
+    private DefaultSectionAdditionStrategyFactory factory;
+
+    @Test
+    @DisplayName("전략 클래스가 올바른 순서대로 주입되는지 확인한다")
+    void strategyOrderTest() {
+        List<SectionAdditionStrategy> strategies = factory.getStrategies();
+
+        assertThat(strategies).containsExactly(
+            addSectionToEmptySectionsStrategy,
             addSectionBeforeFirstUpStationStrategy,
             addSectionAfterUpStationStrategy,
             addSectionBeforeDownStationStrategy,
-            addSectionAfterLastDownStationStrategy,
-            addSectionToEmptySectionsStrategy
-        )
-    );
+            addSectionAfterLastDownStationStrategy
+        );
+    }
 
     @Test
     @DisplayName("빈 노선에 구간을 추가하려고 하면 빈 구간 목록에 새 구간을 추가하는 전략이 선택된다")

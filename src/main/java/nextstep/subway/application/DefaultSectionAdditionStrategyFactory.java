@@ -5,6 +5,7 @@ import static nextstep.subway.domain.model.Sections.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.stereotype.Component;
 
 import nextstep.subway.domain.model.Line;
@@ -20,6 +21,11 @@ public class DefaultSectionAdditionStrategyFactory implements SectionAdditionStr
 
     public DefaultSectionAdditionStrategyFactory(List<SectionAdditionStrategy> strategies) {
         this.strategies = strategies;
+        AnnotationAwareOrderComparator.sort(this.strategies);
+    }
+
+    public List<SectionAdditionStrategy> getStrategies() {
+        return strategies;
     }
 
     @Override
