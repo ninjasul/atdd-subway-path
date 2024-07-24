@@ -144,40 +144,66 @@ public class PathAcceptanceTest {
     }
 
     /**
-     * Given 존재하지 않는 출발역을 생성하고
+     * Given 조회하려는 출발역에 null을 입력하고
      * When 지하철 경로를 조회하면
      * Then 예외가 발생한다
      */
-    @ParameterizedTest
-    @NullSource
-    @ValueSource(longs = {999L})
-    @DisplayName("존재하지 않은 출발역을 조회하는 경우 예외가 발생한다")
-    void findPathWhenSourceStationNotFound(Long source) {
+    @Test
+    @DisplayName("조회하려는 출발역이 null인 경우 예외가 발생한다")
+    void findPathWhenSourceStationIsNull() {
         // given & when
-        ExtractableResponse<Response> response = getPaths(source, 강남역);
+        ExtractableResponse<Response> response = getPaths(null, 강남역);
 
         // then
-        int statusCode = response.statusCode();
-        assertThat(statusCode).isBetween(400, 599);
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     /**
-     * Given 존재하지 않는 도착역을 생성하고
+     * Given 존재하지 않는 출발역으로
      * When 지하철 경로를 조회하면
      * Then 예외가 발생한다
      */
-    @ParameterizedTest
-    @NullSource
-    @ValueSource(longs = {999L})
-    @DisplayName("존재하지 않는 도착역을 조회하는 경우 예외가 발생한다")
-    void findPathWhenTargetStationNotFound(Long target) {
+    @Test
+    @DisplayName("존재하지 않은 출발역을 조회하는 경우 예외가 발생한다")
+    void findPathWhenSourceStationNotFound() {
         // given & when
-        ExtractableResponse<Response> response = getPaths(강남역, target);
+        ExtractableResponse<Response> response = getPaths(999L, 강남역);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.value());
+    }
+
+    /**
+     * Given 조회하려는 도착역에 null을 입력하고
+     * When 지하철 경로를 조회하면
+     * Then 예외가 발생한다
+     */
+    @Test
+    @DisplayName("조회하려는 출발역이 null인 경우 예외가 발생한다")
+    void findPathWhenTargetStationIsNull() {
+        // given & when
+        ExtractableResponse<Response> response = getPaths(강남역, null);
+
+        // then
+        assertThat(response.statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+    }
+
+    /**
+     * Given 존재하지 않는 도착역으로
+     * When 지하철 경로를 조회하면
+     * Then 예외가 발생한다
+     */
+    @Test
+    @DisplayName("존재하지 않는 도착역을 조회하는 경우 예외가 발생한다")
+    void findPathWhenTargetStationNotFound() {
+        // given & when
+        ExtractableResponse<Response> response = getPaths(강남역, 999L);
 
         // then
         int statusCode = response.statusCode();
         assertThat(statusCode).isBetween(400, 599);
     }
+
 
     private List<Long> getResponseStationIds(ExtractableResponse<Response> response) {
         return response.jsonPath().getList("stations.id", Long.class);
