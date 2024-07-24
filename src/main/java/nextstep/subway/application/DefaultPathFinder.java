@@ -26,14 +26,18 @@ public class DefaultPathFinder implements PathFinder {
     }
 
     private void initializeGraph(List<Line> lines) {
-        for (Line line : lines) {
-            for (Section section : line.getOrderedUnmodifiableSections()) {
-                graph.addVertex(section.getUpStation());
-                graph.addVertex(section.getDownStation());
-                DefaultWeightedEdge edge = graph.addEdge(section.getUpStation(), section.getDownStation());
-                graph.setEdgeWeight(edge, section.getDistance());
-            }
-        }
+        lines.forEach(this::addLineToGraph);
+    }
+
+    private void addLineToGraph(Line line) {
+        line.getOrderedUnmodifiableSections().forEach(this::addSectionToGraph);
+    }
+
+    private void addSectionToGraph(Section section) {
+        graph.addVertex(section.getUpStation());
+        graph.addVertex(section.getDownStation());
+        DefaultWeightedEdge edge = graph.addEdge(section.getUpStation(), section.getDownStation());
+        graph.setEdgeWeight(edge, section.getDistance());
     }
 
     public Path findPath(Station source, Station target) {
