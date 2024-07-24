@@ -20,13 +20,17 @@ class AddSectionAfterLastDownStationStrategyTest {
         @DisplayName("마지막 구간의 하행역과 새 구간의 상행역이 같고 구간이 다를 때 추가 가능하다")
         void canAddTrue() {
             // given
+
             Station gangnamStation = new Station(1L, "강남역");
             Station yeoksamStation = new Station(2L, "역삼역");
             Section existingSection = new Section(null, null, gangnamStation, yeoksamStation, 10);
             Section newSection = new Section(null, null, yeoksamStation, new Station(3L, "선릉역"), 8);
 
+            Line line = new Line("2호선", "green");
+            line.addSection(existingSection);
+
             // when
-            boolean result = strategy.canAddToExistingSection(existingSection, newSection, 0, 0);
+            boolean result = strategy.canAddToExistingSection(line.getSections(), existingSection, newSection);
 
             // then
             assertThat(result).isTrue();

@@ -7,9 +7,7 @@ import nextstep.subway.domain.model.Section;
 import nextstep.subway.domain.model.Sections;
 
 public interface SectionAdditionStrategy {
-    int INVALID_SECTION_INDEX = -1;
-
-    int EMPTY_SECTION_INDEX = 0;
+    String SECTION_NOT_FOUND_TO_ADD_NEW_ONE = "새 구간을 추가할 기존 구간이 존재하지 않습니다.";
 
     default boolean canApply(Line line, Section newSection) {
         return findExistingSectionForNewAddition(line.getSections(), newSection).isPresent();
@@ -22,7 +20,7 @@ public interface SectionAdditionStrategy {
 
         for (int i = 0; i < sections.size(); i++) {
             Section currentSection = sections.get(i);
-            if (canAddToExistingSection(currentSection, newSection, sections.size() - 1, i)) {
+            if (canAddToExistingSection(sections, currentSection, newSection)) {
                 return Optional.of(currentSection);
             }
         }
@@ -30,7 +28,7 @@ public interface SectionAdditionStrategy {
         return Optional.empty();
     }
 
-    default boolean canAddToExistingSection(Section existingSection, Section newSection, int maxIndex, int index) {
+    default boolean canAddToExistingSection(Sections sections, Section existingSection, Section newSection) {
         return false;
     }
 

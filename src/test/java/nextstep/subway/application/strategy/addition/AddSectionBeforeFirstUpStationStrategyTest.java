@@ -2,7 +2,6 @@ package nextstep.subway.application.strategy.addition;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -30,8 +29,11 @@ class AddSectionBeforeFirstUpStationStrategyTest {
             Section existingSection = new Section(null, null, yeoksamStation, seolleungStation, 10);
             Section newSection = new Section(null, null, gangnamStation, yeoksamStation, 8);
 
+            Line line = new Line("2호선", "green");
+            line.addSection(existingSection);
+
             // when
-            boolean result = strategy.canAddToExistingSection(existingSection, newSection, 0, 0);
+            boolean result = strategy.canAddToExistingSection(line.getSections(), existingSection, newSection);
 
             // then
             assertThat(result).isTrue();

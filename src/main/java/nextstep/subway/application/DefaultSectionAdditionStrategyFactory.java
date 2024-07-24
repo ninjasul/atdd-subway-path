@@ -20,7 +20,7 @@ public class DefaultSectionAdditionStrategyFactory implements SectionAdditionStr
     private final List<SectionAdditionStrategy> strategies;
 
     public DefaultSectionAdditionStrategyFactory(List<SectionAdditionStrategy> strategies) {
-        this.strategies = strategies;
+        this.strategies = new ArrayList<>(strategies);
         AnnotationAwareOrderComparator.sort(this.strategies);
     }
 

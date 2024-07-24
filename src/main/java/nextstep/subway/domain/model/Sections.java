@@ -81,10 +81,37 @@ public class Sections {
         return Pair.of(upStationToSectionMap, downStationToSectionMap);
     }
 
+    public boolean equalsWithFirstSection(Section section) {
+        if (sections.isEmpty() || section == null) {
+            return false;
+        }
+
+        Pair<Map<Station, Section>, Map<Station, Section>> stationToSectionMaps = getStationToSectionMaps();
+        return section.equals(getFirstSection(stationToSectionMaps.getSecond()));
+    }
+
+    public boolean equalsWithLastSection(Section section) {
+        if (sections.isEmpty() || section == null) {
+            return false;
+        }
+
+        Pair<Map<Station, Section>, Map<Station, Section>> stationToSectionMaps = getStationToSectionMaps();
+        return section.equals(getLastSection(stationToSectionMaps.getFirst()));
+    }
+
+
     private Section getFirstSection(Map<Station, Section> downStationToSectionMap) {
         return sections
             .stream()
             .filter(section -> !downStationToSectionMap.containsKey(section.getUpStation()))
+            .findFirst()
+            .orElse(null);
+    }
+
+    private Section getLastSection(Map<Station, Section> upStationToSectionMap) {
+        return sections
+            .stream()
+            .filter(section -> !upStationToSectionMap.containsKey(section.getDownStation()))
             .findFirst()
             .orElse(null);
     }

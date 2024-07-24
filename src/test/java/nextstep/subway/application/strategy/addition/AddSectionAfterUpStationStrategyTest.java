@@ -30,8 +30,11 @@ class AddSectionAfterUpStationStrategyTest {
             Section existingSection = new Section(null, null, gangnamStation, yeoksamStation, 10);
             Section newSection = new Section(null, null, gangnamStation, seolleungStation, 8);
 
+            Line line = new Line("2호선", "green");
+            line.addSection(existingSection);
+
             // when
-            boolean result = strategy.canAddToExistingSection(existingSection, newSection, 0, 0);
+            boolean result = strategy.canAddToExistingSection(line.getSections(), existingSection, newSection);
 
             // then
             assertThat(result).isTrue();

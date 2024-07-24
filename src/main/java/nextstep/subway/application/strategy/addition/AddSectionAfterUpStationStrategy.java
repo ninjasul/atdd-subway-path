@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 
 import nextstep.subway.domain.model.Line;
 import nextstep.subway.domain.model.Section;
+import nextstep.subway.domain.model.Sections;
 import nextstep.subway.domain.service.SectionAdditionStrategy;
 
 @Component
@@ -14,10 +15,8 @@ import nextstep.subway.domain.service.SectionAdditionStrategy;
 public class AddSectionAfterUpStationStrategy implements SectionAdditionStrategy {
     public static final String ADD_SECTION_AFTER_UP_STATION_FAIL_MESSAGE = "상행역 뒤에";
 
-    public static final String SECTION_NOT_FOUND_TO_ADD_NEW_ONE = "새 구간을 추가할 기존 구간이 존재하지 않습니다.";
-
     @Override
-    public boolean canAddToExistingSection(Section existingSection, Section newSection, int maxIndex, int index) {
+    public boolean canAddToExistingSection(Sections sections, Section existingSection, Section newSection) {
         return areOnlyUpStationsSame(existingSection, newSection) &&
             hasValidDistance(existingSection, newSection);
     }
